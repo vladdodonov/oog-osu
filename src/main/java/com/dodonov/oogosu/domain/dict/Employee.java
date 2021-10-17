@@ -28,9 +28,6 @@ public class Employee extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "department_id", referencedColumnName = "id")
     private Department department;
-    @ManyToOne
-    @JoinColumn(name = "position_id", referencedColumnName = "id")
-    private Position position;
     @Column(name = "qualification")
     @Enumerated(value = EnumType.STRING)
     private Qualification qualification;

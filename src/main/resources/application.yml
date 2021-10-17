@@ -6,8 +6,6 @@ server:
 spring:
   jpa:
     show-sql: true
-    hibernate:
-      ddl-auto: create-drop
   datasource:
     driverClassName: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/oog-osu
@@ -15,4 +13,7 @@ spring:
     password: oog-osu
 
 swagger:
+  enabled: true
+
+flyway:
   enabled: true

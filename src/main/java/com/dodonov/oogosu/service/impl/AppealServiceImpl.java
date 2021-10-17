@@ -2,6 +2,7 @@ package com.dodonov.oogosu.service.impl;
 
 import com.dodonov.oogosu.domain.Appeal;
 import com.dodonov.oogosu.domain.enums.State;
+import com.dodonov.oogosu.dto.appeal.AppealCheckStatusDto;
 import com.dodonov.oogosu.repository.AppealRepository;
 import com.dodonov.oogosu.repository.CitizenRepository;
 import com.dodonov.oogosu.repository.TopicRepository;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 
 @Service
@@ -30,5 +32,14 @@ public class AppealServiceImpl implements AppealService {
                 .department(appeal.getTopic().getDepartment())
                 .build();
         return appealRepository.save(appeal).getId();
+    }
+
+    @Override
+    @Transactional(readOnly = true, rollbackFor = Exception.class)
+    public AppealCheckStatusDto checkStatus(AppealCheckStatusDto dto) {
+        var appeal = appealRepository.findByIdAndCitizen_lastName(dto.getId(), dto.getCitizenLastName())
+                .orElseThrow(EntityNotFoundException::new);
+        dto.setState(appeal.getState());
+        return dto;
     }
 }

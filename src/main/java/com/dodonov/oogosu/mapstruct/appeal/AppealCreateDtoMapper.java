@@ -1,7 +1,7 @@
 package com.dodonov.oogosu.mapstruct.appeal;
 
 import com.dodonov.oogosu.domain.Appeal;
-import com.dodonov.oogosu.dto.AppealCreateDto;
+import com.dodonov.oogosu.dto.appeal.AppealCreateDto;
 import com.dodonov.oogosu.mapstruct.CitizenDtoMapper;
 import com.dodonov.oogosu.mapstruct.TopicDtoMapper;
 import org.mapstruct.Mapper;

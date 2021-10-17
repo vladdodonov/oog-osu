@@ -1,5 +1,7 @@
-package com.dodonov.oogosu.dto;
+package com.dodonov.oogosu.dto.appeal;
 
+import com.dodonov.oogosu.dto.CitizenDto;
+import com.dodonov.oogosu.dto.TopicDto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;

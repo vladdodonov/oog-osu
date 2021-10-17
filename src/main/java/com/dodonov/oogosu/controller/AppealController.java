@@ -1,6 +1,7 @@
 package com.dodonov.oogosu.controller;
 
-import com.dodonov.oogosu.dto.AppealCreateDto;
+import com.dodonov.oogosu.dto.appeal.AppealCheckStatusDto;
+import com.dodonov.oogosu.dto.appeal.AppealCreateDto;
 import com.dodonov.oogosu.mapstruct.appeal.AppealCreateDtoMapper;
 import com.dodonov.oogosu.service.AppealService;
 import com.dodonov.oogosu.utils.http.Response;
@@ -27,5 +28,11 @@ public class AppealController {
     public ResponseEntity<Response<Long>> createAppeal(@RequestBody AppealCreateDto dto) {
         var appeal = AppealCreateDtoMapper.INSTANCE.toEntity(dto);
         return ResponseBuilder.success(appealService.createAppeal(appeal));
+    }
+
+    @ApiOperation(value = "Проверка статуса обращения")
+    @PostMapping(value = "/check-status")
+    public ResponseEntity<Response<AppealCheckStatusDto>> createAppeal(@RequestBody AppealCheckStatusDto dto) {
+        return ResponseBuilder.success(appealService.checkStatus(dto));
     }
 }
