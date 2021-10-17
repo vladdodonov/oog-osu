@@ -1,7 +1,7 @@
 package com.dodonov.oogosu.config.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,14 +18,16 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.servlet.http.HttpServletResponse;
 @EnableGlobalMethodSecurity(prePostEnabled = true, proxyTargetClass = true)
-@EnableWebSecurity 	// Enable security config. This annotation denotes config for spring security.
+@EnableWebSecurity// Enable security config. This annotation denotes config for spring security.
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-	
-	@Autowired
-	private UserDetailsService userDetailsService;
+	private final UserDetailsService userDetailsService;
+	private final JwtConfig jwtConfig;
 
-	@Autowired
-	private JwtConfig jwtConfig;
+	public SecurityConfig(@Lazy UserDetailsService userDetailsService, JwtConfig jwtConfig) {
+		this.userDetailsService = userDetailsService;
+		this.jwtConfig = jwtConfig;
+	}
+
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
