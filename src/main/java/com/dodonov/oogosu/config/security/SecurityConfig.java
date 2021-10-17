@@ -55,13 +55,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				// Any other request must be authenticated
 				.anyRequest().authenticated();
 	}
-	
-	// Spring has UserDetailsService interface, which can be overriden to provide our implementation for fetching user from database (or any other source).
-	// The UserDetailsService object is used by the auth manager to load the user from database.
-	// In addition, we need to define the password encoder also. So, auth manager can compare and verify passwords.
+
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+	}
+
+	@Bean
+	public JwtConfig jwtConfig() {
+		return new JwtConfig();
+	}
+
+	@Bean
+	public BCryptPasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
 	}
 
 	@Bean
@@ -69,16 +76,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
 		return source;
-	}
-	
-	@Bean
-	public JwtConfig jwtConfig() {
-        	return new JwtConfig();
-	}
-	
-	@Bean
-	public BCryptPasswordEncoder passwordEncoder() {
-	    return new BCryptPasswordEncoder();
 	}
 
 	@Override

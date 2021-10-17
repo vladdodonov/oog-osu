@@ -2,6 +2,7 @@ package com.dodonov.oogosu.config.security;
 
 import com.dodonov.oogosu.repository.PrincipalRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -15,12 +16,12 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
-@Primary
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final PrincipalRepository principalRepository;
-    private final BCryptPasswordEncoder encoder;
+    @Autowired
+    private PrincipalRepository principalRepository;
+    @Autowired
+    private BCryptPasswordEncoder encoder;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
