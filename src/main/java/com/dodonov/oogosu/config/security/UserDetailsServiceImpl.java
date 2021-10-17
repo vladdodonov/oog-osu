@@ -2,6 +2,7 @@ package com.dodonov.oogosu.config.security;
 
 import com.dodonov.oogosu.repository.PrincipalRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Primary
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final PrincipalRepository principalRepository;
