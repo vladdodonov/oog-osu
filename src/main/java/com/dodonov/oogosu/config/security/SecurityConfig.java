@@ -42,7 +42,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(jwtConfig.getUri()).permitAll()
                 .antMatchers("/api/appeal/create/**").permitAll()
                 .antMatchers("/api/appeal/check-status/**").permitAll()
-                .antMatchers("/api/topic/findAll/**").permitAll()
+                .antMatchers("/api/topic/find-all/**").permitAll()
                 .anyRequest().authenticated();
     }
 
