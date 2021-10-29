@@ -2,8 +2,11 @@ package com.dodonov.oogosu.controller;
 
 import com.dodonov.oogosu.dto.appeal.AppealCheckStatusDto;
 import com.dodonov.oogosu.dto.appeal.AppealCreateDto;
+import com.dodonov.oogosu.dto.appeal.AppealCriteria;
+import com.dodonov.oogosu.dto.appeal.AppealDto;
 import com.dodonov.oogosu.mapstruct.appeal.AppealCreateDtoMapper;
 import com.dodonov.oogosu.service.AppealService;
+import com.dodonov.oogosu.utils.http.CollectionResponse;
 import com.dodonov.oogosu.utils.http.Response;
 import com.dodonov.oogosu.utils.http.ResponseBuilder;
 import io.swagger.annotations.Api;
@@ -34,5 +37,11 @@ public class AppealController {
     @PostMapping(value = "/check-status")
     public ResponseEntity<Response<AppealCheckStatusDto>> createAppeal(@RequestBody AppealCheckStatusDto dto) {
         return ResponseBuilder.success(appealService.checkStatus(dto));
+    }
+
+    @ApiOperation(value = "Найти обращения по фильтрам")
+    @PostMapping(value = "/find-by-criteria")
+    public ResponseEntity<CollectionResponse<AppealDto>> findByCriteria(@RequestBody AppealCriteria dto) {
+        return ResponseBuilder.success(appealService.findByCriteria(dto));
     }
 }

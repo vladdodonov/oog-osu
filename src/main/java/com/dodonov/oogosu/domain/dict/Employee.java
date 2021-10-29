@@ -2,6 +2,7 @@ package com.dodonov.oogosu.domain.dict;
 
 import com.dodonov.oogosu.domain.BaseEntity;
 import com.dodonov.oogosu.domain.enums.Qualification;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 

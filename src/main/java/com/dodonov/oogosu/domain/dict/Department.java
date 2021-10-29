@@ -1,10 +1,15 @@
 package com.dodonov.oogosu.domain.dict;
 
 import com.dodonov.oogosu.domain.BaseEntity;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 @Getter
 @Setter
@@ -16,7 +21,4 @@ import javax.persistence.*;
 public class Department extends BaseEntity {
     @Column(name = "name")
     private String name;
-    @OneToOne
-    @JoinColumn(name = "lead_id", referencedColumnName = "id")
-    private Employee lead;
 }
