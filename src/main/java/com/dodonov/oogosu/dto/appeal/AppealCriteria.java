@@ -4,7 +4,6 @@ import com.dodonov.oogosu.domain.enums.Decision;
 import com.dodonov.oogosu.domain.enums.State;
 import com.dodonov.oogosu.dto.CitizenDto;
 import com.dodonov.oogosu.dto.RangeDto;
-import com.dodonov.oogosu.utils.Range;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
@@ -52,6 +51,7 @@ public class AppealCriteria {
     private List<Long> topicIds;
 
     @Builder.Default
+    @ApiModelProperty(hidden = true)
     private Set<String> fetch = new HashSet<>();
 
     public void setFetch(String... fetches) {

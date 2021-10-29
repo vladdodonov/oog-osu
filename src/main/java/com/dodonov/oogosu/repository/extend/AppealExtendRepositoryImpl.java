@@ -5,6 +5,7 @@ import com.dodonov.oogosu.domain.Appeal;
 import com.dodonov.oogosu.domain.BaseEntity;
 import com.dodonov.oogosu.domain.Citizen;
 import com.dodonov.oogosu.domain.dict.Department;
+import com.dodonov.oogosu.domain.dict.Employee;
 import com.dodonov.oogosu.domain.dict.Topic;
 import com.dodonov.oogosu.dto.RangeDto;
 import com.dodonov.oogosu.dto.appeal.AppealCriteria;
@@ -31,7 +32,6 @@ import java.util.Set;
 
 import static com.dodonov.oogosu.config.security.UserRole.ADMIN;
 import static com.dodonov.oogosu.config.security.UserRole.INSPECTOR;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.hibernate.internal.util.collections.CollectionHelper.isNotEmpty;
@@ -63,7 +63,6 @@ public class AppealExtendRepositoryImpl implements AppealExtendRepository {
         var cb = entityManager.getCriteriaBuilder();
         var criteriaQuery = cb.createQuery(Appeal.class);
         var root = criteriaQuery.from(Appeal.class);
-        // установка фетчей
         FetchUtil.setFetch(root, criteria.getFetch());
         criteriaQuery.select(root);
         criteriaQuery.where(cb.in(root.get("id")).value(ids));
@@ -141,29 +140,16 @@ public class AppealExtendRepositoryImpl implements AppealExtendRepository {
             predicateList.add(cb.in(root.get("state")).value(criteria.getStates()));
         }
 
-        if (isNotEmpty(criteria.getDepartmentIds())) {
-            if (securityService.hasAnyRole(ADMIN_INSPECTOR_ROLES)) {
-                predicateList.add(cb.in(root.get("department")).value(criteria.getDepartmentIds().stream()
-                        .map(id -> {
-                            var dep = new Department();
-                            dep.setId(id);
-                            return dep;
-                        })
-                        .collect(toList())));
-            } else {
-                predicateList.add(cb.in(root.get("department")).value(Department.builder().id(securityService.getCurrentDepartment().getId()).build()));
-            }
+        if (isNotEmpty(criteria.getDepartmentIds()) && securityService.hasAnyRole(ADMIN_INSPECTOR_ROLES)) {
+            predicateList.add(cb.in(root.get("department")).value(criteria.getDepartmentIds().stream().map(id -> Department.builder().id(id).build()).collect(toSet())));
+
+        } else {
+            predicateList.add(cb.in(root.get("department")).value(Department.builder().id(securityService.getCurrentDepartment().getId()).build()));
         }
 
         if (isNotEmpty(criteria.getTopicIds())) {
             if (securityService.hasAnyRole(ADMIN_INSPECTOR_ROLES)) {
-                predicateList.add(cb.in(root.get("topic")).value(criteria.getTopicIds().stream()
-                        .map(id -> {
-                            var topic = new Topic();
-                            topic.setId(id);
-                            return topic;
-                        })
-                        .collect(toList())));
+                predicateList.add(cb.in(root.get("topic")).value(criteria.getTopicIds().stream().map(id -> Topic.builder().id(id).build()).collect(toSet())));
             } else {
                 var departmentTopicIds = topicService.findAllByDepartment(securityService.getCurrentDepartment()).stream()
                         .map(BaseEntity::getId)
@@ -171,18 +157,12 @@ public class AppealExtendRepositoryImpl implements AppealExtendRepository {
                 var filteredTopicIds = criteria.getTopicIds().stream()
                         .filter(departmentTopicIds::contains)
                         .collect(toSet());
-                predicateList.add(cb.in(root.get("topic")).value(filteredTopicIds.stream()
-                        .map(id -> {
-                            var topic = new Topic();
-                            topic.setId(id);
-                            return topic;
-                        })
-                        .collect(toList())));
+                predicateList.add(cb.in(root.get("topic")).value(filteredTopicIds.stream().map(id -> Topic.builder().id(id).build()).collect(toSet())));
             }
         }
 
         if (isNotEmpty(criteria.getExecutorIds())) {
-            predicateList.add(cb.in(root.get("executor")).value(criteria.getExecutorIds()));
+            predicateList.add(cb.in(root.get("executor")).value(criteria.getExecutorIds().stream().map(id -> Employee.builder().id(id)).collect(toSet())));
         }
 
         if (criteria.getIsProlonged() != null) {
