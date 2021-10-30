@@ -7,6 +7,7 @@ import com.dodonov.oogosu.domain.Citizen;
 import com.dodonov.oogosu.domain.dict.Department;
 import com.dodonov.oogosu.domain.dict.Employee;
 import com.dodonov.oogosu.domain.dict.Topic;
+import com.dodonov.oogosu.domain.enums.Qualification;
 import com.dodonov.oogosu.dto.RangeDto;
 import com.dodonov.oogosu.dto.appeal.AppealCriteria;
 import com.dodonov.oogosu.dto.appeal.AppealDto;
@@ -15,37 +16,53 @@ import com.dodonov.oogosu.service.SecurityService;
 import com.dodonov.oogosu.service.TopicService;
 import com.dodonov.oogosu.utils.FetchUtil;
 import com.dodonov.oogosu.utils.Range;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import javax.persistence.Tuple;
 import javax.persistence.criteria.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static com.dodonov.oogosu.config.security.UserRole.ADMIN;
 import static com.dodonov.oogosu.config.security.UserRole.INSPECTOR;
+import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.hibernate.internal.util.collections.CollectionHelper.isNotEmpty;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @Repository
+@RequiredArgsConstructor
 public class AppealExtendRepositoryImpl implements AppealExtendRepository {
     private final Set<UserRole> ADMIN_INSPECTOR_ROLES = Set.of(ADMIN, INSPECTOR);
-    @PersistenceContext
-    private EntityManager entityManager;
-    @Autowired
-    private SecurityService securityService;
-    @Autowired
-    private TopicService topicService;
+    private final EntityManager entityManager;
+    private final SecurityService securityService;
+    private final TopicService topicService;
+
+    @Override
+    public Map<Long, Employee> getCountAppealsOnExecutorInDepartment(Long departmentId, Set<Qualification> qualifications) {
+        var query = "" +
+                "select count(a) as cnt, emp as emp " +
+                "from Appeal a " +
+                "inner join fetch Employee de " +
+                "where a.department.id = :departmentId " +
+                "and de.qualification in (:qualifications) " +
+                "and coalesce(de.archived, false) is false " +
+                "group by de.id ";
+        return entityManager.createQuery(query, Tuple.class)
+                .setParameter("departmentId", departmentId)
+                .setParameter("qualifications", qualifications)
+                .getResultStream()
+                .collect(toMap(
+                        tuple -> ((Number) tuple.get("cnt")).longValue(),
+                        tuple -> ((Employee) tuple.get("emp"))
+                ));
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -140,6 +157,10 @@ public class AppealExtendRepositoryImpl implements AppealExtendRepository {
             predicateList.add(cb.in(root.get("state")).value(criteria.getStates()));
         }
 
+        if (isNotEmpty(criteria.getDifficulties())) {
+            predicateList.add(cb.in(root.get("difficulty")).value(criteria.getDifficulties()));
+        }
+
         if (isNotEmpty(criteria.getDepartmentIds()) && securityService.hasAnyRole(ADMIN_INSPECTOR_ROLES)) {
             predicateList.add(cb.in(root.get("department")).value(criteria.getDepartmentIds().stream().map(id -> Department.builder().id(id).build()).collect(toSet())));
 
@@ -169,6 +190,18 @@ public class AppealExtendRepositoryImpl implements AppealExtendRepository {
             predicateList.add(criteria.getIsProlonged()
                     ? cb.isTrue(root.get("isProlonged"))
                     : cb.isFalse(root.get("isProlonged")));
+        }
+
+        if (criteria.getIsComplaint() != null) {
+            predicateList.add(criteria.getIsComplaint()
+                    ? cb.isTrue(root.get("isComplaint"))
+                    : cb.isFalse(root.get("isComplaint")));
+        }
+
+        if (criteria.getIsReturned() != null) {
+            predicateList.add(criteria.getIsReturned()
+                    ? cb.isTrue(root.get("isReturned"))
+                    : cb.isFalse(root.get("isReturned")));
         }
         return cb.and(predicateList.toArray(new Predicate[predicateList.size()]));
     }

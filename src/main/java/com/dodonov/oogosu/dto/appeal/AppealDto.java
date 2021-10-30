@@ -1,6 +1,7 @@
 package com.dodonov.oogosu.dto.appeal;
 
 import com.dodonov.oogosu.domain.enums.Decision;
+import com.dodonov.oogosu.domain.enums.Difficulty;
 import com.dodonov.oogosu.domain.enums.State;
 import com.dodonov.oogosu.dto.CitizenDto;
 import com.dodonov.oogosu.dto.DepartmentDto;
@@ -13,7 +14,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
 import java.time.LocalDateTime;
 
 @Builder
@@ -46,6 +46,9 @@ public class AppealDto {
     @ApiModelProperty(value = "Статус обращения")
     private State state;
 
+    @ApiModelProperty(value = "Сложность")
+    private Difficulty difficulty;
+
     @ApiModelProperty(value = "Дата создания")
     private LocalDateTime creationDate;
 
@@ -60,4 +63,13 @@ public class AppealDto {
 
     @ApiModelProperty(value = "Тема обращения")
     private TopicDto topic;
+
+    @ApiModelProperty(value = "Причина возврата")
+    private String returnReason;
+
+    @ApiModelProperty(value = "Признак жалобы")
+    private Boolean isComplaint;
+
+    @ApiModelProperty(value = "Признак возвращения")
+    private Boolean isReturned;
 }

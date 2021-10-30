@@ -32,4 +32,6 @@ public class EmployeeDto {
     private DepartmentDto department;
     @ApiModelProperty(value = "Квалификация")
     private Qualification qualification;
+    @ApiModelProperty(value = "Насколько исполнитель подходит")
+    private Long appealsNumber;
 }

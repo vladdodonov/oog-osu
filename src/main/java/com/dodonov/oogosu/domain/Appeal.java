@@ -4,6 +4,7 @@ import com.dodonov.oogosu.domain.dict.Department;
 import com.dodonov.oogosu.domain.dict.Employee;
 import com.dodonov.oogosu.domain.dict.Topic;
 import com.dodonov.oogosu.domain.enums.Decision;
+import com.dodonov.oogosu.domain.enums.Difficulty;
 import com.dodonov.oogosu.domain.enums.State;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -49,4 +50,13 @@ public class Appeal extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "topic_id", referencedColumnName = "id")
     private Topic topic;
+    @Column(name = "difficulty")
+    @Enumerated(value = EnumType.STRING)
+    private Difficulty difficulty;
+    @Column(name = "return_reason")
+    private String returnReason;
+    @Column(name = "is_complaint")
+    private Boolean isComplaint;
+    @Column(name = "is_returned")
+    private Boolean isReturned;
 }

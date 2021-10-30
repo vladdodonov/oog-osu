@@ -5,9 +5,13 @@ import com.dodonov.oogosu.dto.EmployeeDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
+import java.util.List;
+
 @Mapper
 public interface EmployeeMapper {
     EmployeeMapper INSTANCE = Mappers.getMapper(EmployeeMapper.class);
     EmployeeDto toDto(Employee employee);
     Employee toEntity(EmployeeDto employeeDto);
+    List<EmployeeDto> toDtos(List<Employee> employee);
+    List<Employee> toEntities(List<EmployeeDto> employeeDto);
 }

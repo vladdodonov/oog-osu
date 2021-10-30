@@ -7,5 +7,10 @@ import java.util.List;
 
 public interface TopicService {
     List<Topic> findAll();
+
     List<Topic> findAllByDepartment(Department department);
+
+    Topic addTopicToDepartment(Topic topic);
+
+    void deleteById(Long topicId);
 }

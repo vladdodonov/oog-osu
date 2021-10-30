@@ -1,6 +1,7 @@
 package com.dodonov.oogosu.dto.appeal;
 
 import com.dodonov.oogosu.domain.enums.Decision;
+import com.dodonov.oogosu.domain.enums.Difficulty;
 import com.dodonov.oogosu.domain.enums.State;
 import com.dodonov.oogosu.dto.CitizenDto;
 import com.dodonov.oogosu.dto.RangeDto;
@@ -49,6 +50,12 @@ public class AppealCriteria {
     private Boolean isProlonged;
     @ApiModelProperty(value = "Идентификаторы тем")
     private List<Long> topicIds;
+    @ApiModelProperty(value = "Сложность")
+    private List<Difficulty> difficulties;
+    @ApiModelProperty(value = "Признак жалобы")
+    private Boolean isComplaint;
+    @ApiModelProperty(value = "Признак возвращения")
+    private Boolean isReturned;
 
     @Builder.Default
     @ApiModelProperty(hidden = true)

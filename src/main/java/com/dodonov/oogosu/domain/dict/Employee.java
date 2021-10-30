@@ -7,6 +7,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
+import java.util.Comparator;
 
 @Getter
 @Setter
@@ -34,4 +35,8 @@ public class Employee extends BaseEntity {
     private Qualification qualification;
     @Column(name = "username")
     private String username;
+    @Transient
+    private Long appealsNumber;
+
+    public static final Comparator<Employee> COMPARATOR_EMPLOYEE_APPEALS_NUMBER = Comparator.nullsLast(Comparator.comparingLong(Employee::getAppealsNumber));
 }

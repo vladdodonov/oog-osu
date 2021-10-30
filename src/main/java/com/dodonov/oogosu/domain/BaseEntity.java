@@ -23,6 +23,9 @@ public abstract class BaseEntity {
     @Column(name = "id")
     protected Long id;
 
+    @Column(name = "archived")
+    protected Boolean archived;
+
     /**
      * Если хоть один из идентификаторов == null, сущности должны считаться различными.
      * В противном случае будет невозможно добавить несколько новых (состояние Transient) сущностей в связь to-many,

@@ -16,4 +16,5 @@ public interface AppealDtoMapper {
     AppealDtoMapper INSTANCE = Mappers.getMapper(AppealDtoMapper.class);
 
     List<AppealDto> toDto(List<Appeal> appeal);
+    AppealDto toDto(Appeal appeal);
 }
