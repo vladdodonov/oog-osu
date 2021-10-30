@@ -12,8 +12,8 @@ spring:
         use_sql_comments: false
         generate_statistics: false
   datasource:
-    driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/oog-osu
+    driverClassName: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+    url: jdbc:log4jdbc:postgresql://localhost:5432/oog-osu
     username: oog-osu
     password: oog-osu
 
