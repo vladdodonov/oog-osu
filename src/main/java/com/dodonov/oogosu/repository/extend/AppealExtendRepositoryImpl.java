@@ -29,9 +29,11 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.dodonov.oogosu.config.security.UserRole.ADMIN;
+import static com.dodonov.oogosu.config.security.UserRole.EXECUTOR;
 import static com.dodonov.oogosu.config.security.UserRole.INSPECTOR;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
+import static org.apache.commons.lang3.BooleanUtils.isTrue;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.hibernate.internal.util.collections.CollectionHelper.isNotEmpty;
 import static org.springframework.data.domain.Sort.Direction.DESC;
@@ -45,22 +47,22 @@ public class AppealExtendRepositoryImpl implements AppealExtendRepository {
     private final TopicService topicService;
 
     @Override
-    public Map<Long, Employee> getCountAppealsOnExecutorInDepartment(Long departmentId, Set<Qualification> qualifications) {
+    public Map<Employee, Long> getCountAppealsOnExecutorInDepartment(Long departmentId, Set<Qualification> qualifications) {
         var query = "" +
-                "select count(a) as cnt, emp as emp " +
-                "from Appeal a " +
-                "inner join fetch Employee de " +
-                "where a.department.id = :departmentId " +
-                "and de.qualification in (:qualifications) " +
-                "and coalesce(de.archived, false) is false " +
-                "group by de.id ";
+                "select emp as emp, sum(case when a.executor != null then 1 else 0 end) as cnt " +
+                "from Employee emp " +
+                "left join fetch Appeal a on a.executor = emp " +
+                "where emp.department.id = :departmentId " +
+                "and emp.qualification in (:qualifications) " +
+                "and coalesce(emp.archived, false) is false " +
+                "group by emp.id ";
         return entityManager.createQuery(query, Tuple.class)
                 .setParameter("departmentId", departmentId)
                 .setParameter("qualifications", qualifications)
                 .getResultStream()
                 .collect(toMap(
-                        tuple -> ((Number) tuple.get("cnt")).longValue(),
-                        tuple -> ((Employee) tuple.get("emp"))
+                        tuple -> ((Employee) tuple.get("emp")),
+                        tuple -> ((Number) tuple.get("cnt")).longValue()
                 ));
     }
 
@@ -202,6 +204,12 @@ public class AppealExtendRepositoryImpl implements AppealExtendRepository {
             predicateList.add(criteria.getIsReturned()
                     ? cb.isTrue(root.get("isReturned"))
                     : cb.isFalse(root.get("isReturned")));
+        }
+        if (!securityService.hasRole(ADMIN)){
+            cb.equal(root.get("department"), securityService.getCurrentEmployee().getDepartment());
+        }
+        if (securityService.hasRole(EXECUTOR)) {
+            cb.equal(root.get("executor"), securityService.getCurrentEmployee());
         }
         return cb.and(predicateList.toArray(new Predicate[predicateList.size()]));
     }

@@ -23,9 +23,25 @@ public class EmployeeController {
 
     @ApiOperation(value = "Получение всех работников по департаменту")
     @GetMapping(value = "/{departmentId}")
+    @PreAuthorize("hasRole(T(com.dodonov.oogosu.config.security.UserRole).ADMIN)")
     public ResponseEntity<CollectionResponse<EmployeeDto>> getAllByDepartment(@PathVariable(name = "departmentId") Long departmentId) {
         var employees = EmployeeMapper.INSTANCE.toDtos(employeeService.findAllByDepartmentId(departmentId));
         return ResponseBuilder.success(employees);
+    }
+
+    @ApiOperation(value = "Получение всех работников по департаменту")
+    @GetMapping
+    @PreAuthorize("hasRole(T(com.dodonov.oogosu.config.security.UserRole).LEAD)")
+    public ResponseEntity<CollectionResponse<EmployeeDto>> getAllFromMyDepartment() {
+        var employees = EmployeeMapper.INSTANCE.toDtos(employeeService.getAllFromMyDepartment());
+        return ResponseBuilder.success(employees);
+    }
+
+    @ApiOperation(value = "Получить текущего сотрудника")
+    @GetMapping(value = "/current")
+    public ResponseEntity<Response<EmployeeDto>> getAllByDepartment() {
+        var employee = EmployeeMapper.INSTANCE.toDto(employeeService.getCurrent());
+        return ResponseBuilder.success(employee);
     }
 
     @ApiOperation(value = "Сохранить работника")

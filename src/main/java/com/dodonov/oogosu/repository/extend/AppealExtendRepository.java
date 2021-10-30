@@ -11,5 +11,5 @@ import java.util.Set;
 
 public interface AppealExtendRepository {
     Page<AppealDto> findByCriteria(AppealCriteria criteria);
-    Map<Long, Employee> getCountAppealsOnExecutorInDepartment(Long departmentId, Set<Qualification> qualifications);
+    Map<Employee, Long> getCountAppealsOnExecutorInDepartment(Long departmentId, Set<Qualification> qualifications);
 }

@@ -2,9 +2,8 @@ package com.dodonov.oogosu.service;
 
 import com.dodonov.oogosu.domain.Appeal;
 import com.dodonov.oogosu.domain.dict.Employee;
-import com.dodonov.oogosu.dto.appeal.AppealCheckStatusDto;
-import com.dodonov.oogosu.dto.appeal.AppealCriteria;
-import com.dodonov.oogosu.dto.appeal.AppealDto;
+import com.dodonov.oogosu.domain.enums.Difficulty;
+import com.dodonov.oogosu.dto.appeal.*;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
@@ -19,11 +18,11 @@ public interface AppealService {
 
     Appeal prolong(Long id, LocalDateTime dueDate);
 
-    Appeal appoint(Employee employee, Long appealId, Boolean isComplaint);
+    Appeal appoint(AppealAppointmentDto dto);
 
-    Appeal answer(AppealDto appealDto);
+    Appeal answer(AppealAnswerDto appealDto);
 
-    Appeal returnToExecutor(AppealDto appealDto);
+    Appeal returnToExecutor(AppealReturnDto appealDto);
 
-    Appeal sendAnswer(AppealDto appealDto);
+    Appeal sendAnswer(Long id);
 }

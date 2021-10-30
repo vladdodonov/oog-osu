@@ -3,6 +3,7 @@ package com.dodonov.oogosu.service;
 import com.dodonov.oogosu.domain.dict.Employee;
 import com.dodonov.oogosu.domain.enums.Qualification;
 import com.dodonov.oogosu.dto.appeal.AppealDto;
+import com.dodonov.oogosu.dto.appeal.AppealMatchingEmployeeDto;
 
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,11 @@ public interface EmployeeService {
 
     Employee findLeadByDepartmentId(Long departmentId);
 
-    List<Employee> findEmployeesMatching(AppealDto dto);
+    List<Employee> findEmployeesMatching(AppealMatchingEmployeeDto dto);
 
-    Map<Long, Employee> findAllByDepartmentIdAndQualifications(Long departmentId, Set<Qualification> qualification);
+    Map<Employee, Long> findAllByDepartmentIdAndQualifications(Long departmentId, Set<Qualification> qualification);
+
+    Employee getCurrent();
+
+    List<Employee> getAllFromMyDepartment();
 }

@@ -1,10 +1,8 @@
 package com.dodonov.oogosu.controller;
 
+import com.dodonov.oogosu.domain.enums.Difficulty;
 import com.dodonov.oogosu.dto.EmployeeDto;
-import com.dodonov.oogosu.dto.appeal.AppealCheckStatusDto;
-import com.dodonov.oogosu.dto.appeal.AppealCreateDto;
-import com.dodonov.oogosu.dto.appeal.AppealCriteria;
-import com.dodonov.oogosu.dto.appeal.AppealDto;
+import com.dodonov.oogosu.dto.appeal.*;
 import com.dodonov.oogosu.mapstruct.EmployeeMapper;
 import com.dodonov.oogosu.mapstruct.appeal.AppealCreateDtoMapper;
 import com.dodonov.oogosu.mapstruct.appeal.AppealDtoMapper;
@@ -19,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
 
 
 @Api(tags = "appeal", description = "Работа с обращениями")
@@ -51,15 +51,15 @@ public class AppealController {
     @ApiOperation(value = "Найти подходящих исполнителей")
     @PostMapping(value = "/find-employees-matching")
     @PreAuthorize("hasAnyRole({T(com.dodonov.oogosu.config.security.UserRole).ADMIN, T(com.dodonov.oogosu.config.security.UserRole).LEAD})")
-    public ResponseEntity<CollectionResponse<EmployeeDto>> findEmployeesMatching(@RequestBody AppealDto dto) {
+    public ResponseEntity<CollectionResponse<EmployeeDto>> findEmployeesMatching(@RequestBody AppealMatchingEmployeeDto dto) {
         return ResponseBuilder.success(EmployeeMapper.INSTANCE.toDtos(employeeService.findEmployeesMatching(dto)));
     }
 
     @ApiOperation(value = "Назначить обращение на сотрудника")
-    @PostMapping(value = "/appoint/{id}")
+    @PostMapping(value = "/appoint")
     @PreAuthorize("hasAnyRole({T(com.dodonov.oogosu.config.security.UserRole).ADMIN, T(com.dodonov.oogosu.config.security.UserRole).LEAD})")
-    public ResponseEntity<Response<AppealDto>> appoint(@RequestBody EmployeeDto dto, @PathVariable(name = "id") Long appealId, @RequestParam Boolean isComplaint) {
-        return ResponseBuilder.success(AppealDtoMapper.INSTANCE.toDto(appealService.appoint(EmployeeMapper.INSTANCE.toEntity(dto), appealId, isComplaint)));
+    public ResponseEntity<Response<AppealDto>> appoint(@RequestBody AppealAppointmentDto dto) {
+        return ResponseBuilder.success(AppealDtoMapper.INSTANCE.toDto(appealService.appoint(dto)));
     }
 
     @ApiOperation(value = "Продлить срок обращения")
@@ -71,21 +71,28 @@ public class AppealController {
 
     @ApiOperation(value = "Подготовить ответ")
     @PostMapping(value = "/answer")
-    public ResponseEntity<Response<AppealDto>> answer(@RequestBody AppealDto appealDto) {
-        return ResponseBuilder.success(AppealDtoMapper.INSTANCE.toDto(appealService.answer(appealDto)));
+    public ResponseEntity<Response<AppealDto>> answer(@RequestBody AppealAnswerDto dto) {
+        return ResponseBuilder.success(AppealDtoMapper.INSTANCE.toDto(appealService.answer(dto)));
     }
 
     @ApiOperation(value = "Вернуть на доработку")
     @PostMapping(value = "/return-to-executor")
     @PreAuthorize("hasAnyRole({T(com.dodonov.oogosu.config.security.UserRole).ADMIN, T(com.dodonov.oogosu.config.security.UserRole).LEAD})")
-    public ResponseEntity<Response<AppealDto>> returnToExecutor(@RequestBody AppealDto appealDto) {
+    public ResponseEntity<Response<AppealDto>> returnToExecutor(@RequestBody AppealReturnDto appealDto) {
         return ResponseBuilder.success(AppealDtoMapper.INSTANCE.toDto(appealService.returnToExecutor(appealDto)));
     }
 
     @ApiOperation(value = "Отправить ответ автору")
-    @PostMapping(value = "/send-answer")
+    @PostMapping(value = "/send-answer/{id}")
     @PreAuthorize("hasAnyRole({T(com.dodonov.oogosu.config.security.UserRole).ADMIN, T(com.dodonov.oogosu.config.security.UserRole).LEAD})")
-    public ResponseEntity<Response<AppealDto>> sendAnswer(@RequestBody AppealDto appealDto) {
-        return ResponseBuilder.success(AppealDtoMapper.INSTANCE.toDto(appealService.sendAnswer(appealDto)));
+    public ResponseEntity<Response<AppealDto>> sendAnswer(@PathVariable(name = "id") Long id) {
+        return ResponseBuilder.success(AppealDtoMapper.INSTANCE.toDto(appealService.sendAnswer(id)));
+    }
+
+    @ApiOperation(value = "Получить сложность")
+    @GetMapping(value = "/difficulties")
+    @PreAuthorize("hasAnyRole({T(com.dodonov.oogosu.config.security.UserRole).ADMIN, T(com.dodonov.oogosu.config.security.UserRole).LEAD})")
+    public ResponseEntity<CollectionResponse<Difficulty>> getDifficulties() {
+        return ResponseBuilder.success(Arrays.asList(Difficulty.values()));
     }
 }

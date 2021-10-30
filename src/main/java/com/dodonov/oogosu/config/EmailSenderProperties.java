@@ -11,9 +11,7 @@ import org.springframework.context.annotation.Configuration;
 @Setter
 public class EmailSenderProperties {
     private String smtpServerName;
-    private String imapServerName;
     private Integer smtpServerPort;
-    private Integer imapServerPort;
     private String userName;
     private String userPassword;
 }

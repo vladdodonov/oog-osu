@@ -26,8 +26,6 @@ flyway:
 emailservice:
   smtp:
     smtp-server-name: "smtp.gmail.com"
-    imap-server-name: "imap.gmail.com"
-    smtp-server-port: 465
-    imap-server-port: 993
+    smtp-server-port: 587
     user-name: "og.osu.dodonov@gmail.com"
     user-password: "Qwerty123!"
