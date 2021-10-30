@@ -44,34 +44,30 @@ public class ReportServiceImpl implements ReportService {
                 "         group by depId " +
                 "     ), " +
                 "     prolonged_cnt as ( " +
-                "         select count(*) as prolongedCnt, dep.depId as depId " +
-                "         from appeal a " +
-                "                  left join departments dep on a.department_id = dep.depId " +
-                "         where a.is_prolonged is true " +
+                "         select sum(case when a.department_id is not null and a.is_prolonged is true then 1 else 0 end) as prolongedCnt, dep.depId as depId " +
+                "         from departments dep " +
+                "                  left join appeal a on a.department_id = dep.depId " +
                 "         group by depId " +
                 "     ), " +
                 "     complaints_cnt as ( " +
-                "         select count(*) as complaintsCnt, dep.depId as depId " +
-                "         from appeal a " +
-                "                  left join departments dep on a.department_id = dep.depId " +
-                "         where a.is_complaint is true " +
-                "           and a.decision = :positive " +
+                "         select sum(case when a.department_id is not null and a.is_complaint is true and a.decision = :positive then 1 else 0 end) as complaintsCnt, dep.depId as depId " +
+                "         from departments dep " +
+                "                  left join appeal a on a.department_id = dep.depId " +
                 "         group by depId " +
                 "     ), " +
                 "     returned_cnt as ( " +
-                "         select count(*) as returnedCnt, dep.depId as depId " +
-                "         from appeal a " +
-                "                  left join departments dep on a.department_id = dep.depId " +
-                "         where a.is_returned is true " +
+                "         select sum(case when a.department_id is not null and a.is_returned is true then 1 else 0 end) as returnedCnt, dep.depId as depId " +
+                "         from departments dep " +
+                "                  left join appeal a on a.department_id = dep.depId " +
                 "         group by depId " +
                 "     ) " +
                 " " +
                 "select dep.depId                                              as depId, " +
                 "       dep.depName                                            as depName, " +
                 "       all_cnt.appCnt                                         as appCnt, " +
-                "       prolonged_cnt.prolongedCnt / (all_cnt.appCnt / 100)    as prolongedCnt, " +
-                "       complaints_cnt.complaintsCnt / (all_cnt.appCnt / 100)  as complaintsCnt, " +
-                "       returned_cnt.returnedCnt / (all_cnt.appCnt / 100)      as returnedCnt " +
+                "       prolonged_cnt.prolongedCnt * 100 / all_cnt.appCnt      as prolongedCnt, " +
+                "       complaints_cnt.complaintsCnt * 100 / all_cnt.appCnt    as complaintsCnt, " +
+                "       returned_cnt.returnedCnt * 100 / all_cnt.appCnt        as returnedCnt " +
                 "from departments dep " +
                 "         left join all_cnt on dep.depId = all_cnt.depId " +
                 "         left join prolonged_cnt on dep.depId = prolonged_cnt.depId " +
@@ -79,7 +75,7 @@ public class ReportServiceImpl implements ReportService {
                 "         left join returned_cnt on dep.depId = returned_cnt.depId")
                 .unwrap(org.hibernate.query.Query.class)
                 .setResultTransformer(transformer())
-                .setParameter("positive", Decision.POSITIVE)
+                .setParameter("positive", Decision.POSITIVE.name())
                 .getResultList();
         var dto = new ReportDto();
         dto.setDepartmentDataList(departmentData);
