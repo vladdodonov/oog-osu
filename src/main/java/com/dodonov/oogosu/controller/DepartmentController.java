@@ -17,7 +17,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
-@Api(tags = "topic", description = "Работа с департаментами")
+@Api(tags = "department", description = "Работа с департаментами")
 @RestController
 @RequestMapping("/api/department")
 @RequiredArgsConstructor
