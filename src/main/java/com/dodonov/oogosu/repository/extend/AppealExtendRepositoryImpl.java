@@ -34,7 +34,6 @@ import static com.dodonov.oogosu.config.security.UserRole.EXECUTOR;
 import static com.dodonov.oogosu.config.security.UserRole.INSPECTOR;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
-import static org.apache.commons.lang3.BooleanUtils.isTrue;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.hibernate.internal.util.collections.CollectionHelper.isNotEmpty;
 import static org.springframework.data.domain.Sort.Direction.DESC;
@@ -165,10 +164,14 @@ public class AppealExtendRepositoryImpl implements AppealExtendRepository {
             predicateList.add(cb.in(root.get("difficulty")).value(criteria.getDifficulties()));
         }
 
+        if (isNotEmpty(criteria.getAppealIds())) {
+            predicateList.add(cb.in(root.get("id")).value(criteria.getAppealIds()));
+        }
+
         if (isNotEmpty(criteria.getDepartmentIds()) && securityService.hasAnyRole(ADMIN_INSPECTOR_ROLES)) {
             predicateList.add(cb.in(root.get("department")).value(criteria.getDepartmentIds().stream().map(id -> Department.builder().id(id).build()).collect(toSet())));
 
-        } else if (!securityService.hasRole(ADMIN)){
+        } else if (!securityService.hasRole(ADMIN)) {
             predicateList.add(cb.equal(root.get("department"), securityService.getCurrentEmployee().getDepartment()));
         }
 
