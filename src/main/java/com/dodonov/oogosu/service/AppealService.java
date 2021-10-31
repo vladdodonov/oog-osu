@@ -25,4 +25,6 @@ public interface AppealService {
     Appeal returnToExecutor(AppealReturnDto appealDto);
 
     Appeal sendAnswer(Long id);
+
+    Appeal findById(Long id);
 }

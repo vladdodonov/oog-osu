@@ -32,6 +32,8 @@ public class AppealCriteria {
     private List<State> states;
     @ApiModelProperty(value = "Идентификаторы департаментов")
     private List<Long> departmentIds;
+    @ApiModelProperty(value = "Идентификаторы Обращений")
+    private List<Long> appealIds;
     @ApiModelProperty(value = "Идентификаторы исполнителей")
     private List<Long> executorIds;
     @ApiModelProperty(value = "Дата создания от")

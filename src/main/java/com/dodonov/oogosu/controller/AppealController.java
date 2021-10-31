@@ -2,13 +2,10 @@ package com.dodonov.oogosu.controller;
 
 import com.dodonov.oogosu.domain.enums.Decision;
 import com.dodonov.oogosu.domain.enums.Difficulty;
-import com.dodonov.oogosu.dto.EmployeeDto;
 import com.dodonov.oogosu.dto.appeal.*;
-import com.dodonov.oogosu.mapstruct.EmployeeMapper;
 import com.dodonov.oogosu.mapstruct.appeal.AppealCreateDtoMapper;
 import com.dodonov.oogosu.mapstruct.appeal.AppealDtoMapper;
 import com.dodonov.oogosu.service.AppealService;
-import com.dodonov.oogosu.service.EmployeeService;
 import com.dodonov.oogosu.utils.http.CollectionResponse;
 import com.dodonov.oogosu.utils.http.Response;
 import com.dodonov.oogosu.utils.http.ResponseBuilder;
@@ -28,6 +25,12 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class AppealController {
     private final AppealService appealService;
+
+    @ApiOperation(value = "Получить обращение по идентификатору")
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<Response<AppealDto>> getAppealById(@PathVariable(name = "id") Long id) {
+        return ResponseBuilder.success(AppealDtoMapper.INSTANCE.toDto(appealService.findById(id)));
+    }
 
     @ApiOperation(value = "Создание обращения")
     @PostMapping(value = "/create")
@@ -64,6 +67,7 @@ public class AppealController {
 
     @ApiOperation(value = "Подготовить ответ")
     @PostMapping(value = "/answer")
+    @PreAuthorize("hasAnyRole({T(com.dodonov.oogosu.config.security.UserRole).ADMIN, T(com.dodonov.oogosu.config.security.UserRole).LEAD, T(com.dodonov.oogosu.config.security.UserRole).EXECUTOR})")
     public ResponseEntity<Response<AppealDto>> answer(@RequestBody AppealAnswerDto dto) {
         return ResponseBuilder.success(AppealDtoMapper.INSTANCE.toDto(appealService.answer(dto)));
     }

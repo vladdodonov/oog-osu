@@ -64,6 +64,24 @@ public class AppealServiceImpl implements AppealService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Appeal findById(Long id) {
+        var appeal = appealRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        if (securityService.getCurrentDepartment().equals(appeal.getDepartment())){
+            if (securityService.hasRole(UserRole.EXECUTOR)){
+                if (!securityService.getCurrentEmployee().equals(appeal.getExecutor())){
+                    throw new RuntimeException("Вы не имеете право смотреть это обращение");
+                }
+            }
+        } else {
+            if (!securityService.hasRole(UserRole.ADMIN) || !securityService.hasRole(UserRole.INSPECTOR)){
+                throw new RuntimeException("Вы не имеете право смотреть это обращение");
+            }
+        }
+        return appeal;
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public Long createAppeal(Appeal appeal) {
         var topic = topicRepository.findById(appeal.getTopic().getId()).orElseThrow(EntityNotFoundException::new);
@@ -127,7 +145,7 @@ public class AppealServiceImpl implements AppealService {
     @Transactional(rollbackFor = Exception.class)
     public Appeal answer(AppealAnswerDto appealDto) {
         var appeal = appealRepository.findById(appealDto.getId()).orElseThrow(EntityNotFoundException::new);
-        if (!IN_WORK.equals(appeal.getState())){
+        if (!IN_WORK.equals(appeal.getState())) {
             throw new RuntimeException("Подготовить ответ можно только на обращение, находящееся в работе");
         }
         if (StringUtils.isBlank(appealDto.getAnswer())) {
@@ -171,7 +189,7 @@ public class AppealServiceImpl implements AppealService {
     @SneakyThrows
     public Appeal sendAnswer(Long id) {
         var appeal = appealRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        if (!ON_REVIEW.equals(appeal.getState())){
+        if (!ON_REVIEW.equals(appeal.getState())) {
             throw new RuntimeException("Отправить ответ можно только из статуса На проверке");
         }
         String messageText = String.format(MESSAGE_ANSWER,
@@ -197,7 +215,7 @@ public class AppealServiceImpl implements AppealService {
 
     private String getEmployeeRequiusites(Optional<Employee> lead, String departmentName) {
         var emp = lead.orElseThrow(EntityNotFoundException::new);
-        return Stream.of(emp.getLastName(), emp.getFirstName(), emp.getMiddleName(),"-", departmentName + ", начальник")
+        return Stream.of(emp.getLastName(), emp.getFirstName(), emp.getMiddleName(), "-", departmentName + ", начальник")
                 .filter(StringUtils::isNotBlank)
                 .collect(Collectors.joining(" "));
     }
