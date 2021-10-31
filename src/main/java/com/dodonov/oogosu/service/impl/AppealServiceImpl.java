@@ -158,6 +158,7 @@ public class AppealServiceImpl implements AppealService {
             appeal.setIsProlonged(true);
             appeal.setDueDate(appealDto.getDueDate());
         }
+        appeal.setReturnReason(appealDto.getReturnReason());
         appeal.setAnswerDate(null);
         appeal.setAnswer(null);
         appeal.setIsReturned(true);
@@ -175,7 +176,7 @@ public class AppealServiceImpl implements AppealService {
         }
         String messageText = String.format(MESSAGE_ANSWER,
                 getAuthorFio(appeal.getCitizen()),
-                appeal.getCreationDate(),
+                appeal.getCreationDate().toLocalDate(),
                 appeal.getId(),
                 appeal.getAnswer(),
                 getEmployeeRequiusites(employeeRepository.findByQualificationAndDepartment_id(Qualification.LEAD, appeal.getDepartment().getId()), appeal.getDepartment().getName()));

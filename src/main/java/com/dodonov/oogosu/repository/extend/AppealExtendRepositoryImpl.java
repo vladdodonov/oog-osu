@@ -50,12 +50,11 @@ public class AppealExtendRepositoryImpl implements AppealExtendRepository {
     @Override
     public Map<Employee, Long> getCountAppealsOnExecutorInDepartment(Long departmentId, Set<Qualification> qualifications) {
         var query = "" +
-                "select emp as emp, sum(case when a.executor != null then 1 else 0 end) as cnt " +
+                "select emp as emp, sum(case when a.executor != null and a.state != :sent then 1 else 0 end) as cnt " +
                 "from Employee emp " +
                 "left join fetch Appeal a on a.executor = emp " +
                 "where emp.department.id = :departmentId " +
                 "and emp.qualification in (:qualifications) " +
-                "and a.state != :sent " +
                 "and coalesce(emp.archived, false) is false " +
                 "group by emp.id ";
         return entityManager.createQuery(query, Tuple.class)
