@@ -166,8 +166,8 @@ public class AppealExtendRepositoryImpl implements AppealExtendRepository {
         if (isNotEmpty(criteria.getDepartmentIds()) && securityService.hasAnyRole(ADMIN_INSPECTOR_ROLES)) {
             predicateList.add(cb.in(root.get("department")).value(criteria.getDepartmentIds().stream().map(id -> Department.builder().id(id).build()).collect(toSet())));
 
-        } else {
-            predicateList.add(cb.in(root.get("department")).value(Department.builder().id(securityService.getCurrentDepartment().getId()).build()));
+        } else if (!securityService.hasRole(ADMIN)){
+            predicateList.add(cb.equal(root.get("department"), securityService.getCurrentEmployee().getDepartment()));
         }
 
         if (isNotEmpty(criteria.getTopicIds())) {
@@ -205,11 +205,8 @@ public class AppealExtendRepositoryImpl implements AppealExtendRepository {
                     ? cb.isTrue(root.get("isReturned"))
                     : cb.isFalse(root.get("isReturned")));
         }
-        if (!securityService.hasRole(ADMIN)){
-            cb.equal(root.get("department"), securityService.getCurrentEmployee().getDepartment());
-        }
         if (securityService.hasRole(EXECUTOR)) {
-            cb.equal(root.get("executor"), securityService.getCurrentEmployee());
+            predicateList.add(cb.equal(root.get("executor"), securityService.getCurrentEmployee()));
         }
         return cb.and(predicateList.toArray(new Predicate[predicateList.size()]));
     }

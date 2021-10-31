@@ -1,6 +1,7 @@
 package com.dodonov.oogosu.controller;
 
 import com.dodonov.oogosu.dto.EmployeeDto;
+import com.dodonov.oogosu.dto.appeal.AppealMatchingEmployeeDto;
 import com.dodonov.oogosu.mapstruct.EmployeeMapper;
 import com.dodonov.oogosu.service.EmployeeService;
 import com.dodonov.oogosu.utils.http.CollectionResponse;
@@ -29,9 +30,16 @@ public class EmployeeController {
         return ResponseBuilder.success(employees);
     }
 
+    @ApiOperation(value = "Найти подходящих исполнителей")
+    @PostMapping(value = "/find-employees-matching")
+    @PreAuthorize("hasAnyRole({T(com.dodonov.oogosu.config.security.UserRole).ADMIN, T(com.dodonov.oogosu.config.security.UserRole).LEAD})")
+    public ResponseEntity<CollectionResponse<EmployeeDto>> findEmployeesMatching(@RequestBody AppealMatchingEmployeeDto dto) {
+        return ResponseBuilder.success(EmployeeMapper.INSTANCE.toDtos(employeeService.findEmployeesMatching(dto)));
+    }
+
     @ApiOperation(value = "Получение всех работников по департаменту")
     @GetMapping
-    @PreAuthorize("hasRole(T(com.dodonov.oogosu.config.security.UserRole).LEAD)")
+    @PreAuthorize("hasAnyRole({T(com.dodonov.oogosu.config.security.UserRole).ADMIN, T(com.dodonov.oogosu.config.security.UserRole).LEAD})")
     public ResponseEntity<CollectionResponse<EmployeeDto>> getAllFromMyDepartment() {
         var employees = EmployeeMapper.INSTANCE.toDtos(employeeService.getAllFromMyDepartment());
         return ResponseBuilder.success(employees);

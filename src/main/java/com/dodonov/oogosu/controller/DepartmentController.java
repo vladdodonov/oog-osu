@@ -1,5 +1,6 @@
 package com.dodonov.oogosu.controller;
 
+import com.dodonov.oogosu.domain.enums.Qualification;
 import com.dodonov.oogosu.dto.DepartmentDto;
 import com.dodonov.oogosu.dto.EmployeeDto;
 import com.dodonov.oogosu.mapstruct.DepartmentMapper;
@@ -15,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
 
 
 @Api(tags = "topic", description = "Работа с департаментами")
@@ -54,5 +57,12 @@ public class DepartmentController {
     public ResponseEntity deleteTopic(@PathVariable(value = "departmentId") final Long departmentId) {
         departmentService.deleteById(departmentId);
         return ResponseBuilder.success();
+    }
+
+    @ApiOperation(value = "Получить квалификацию")
+    @GetMapping(value = "/qualifications")
+    @PreAuthorize("hasRole(T(com.dodonov.oogosu.config.security.UserRole).ADMIN)")
+    public ResponseEntity<CollectionResponse<Qualification>> getDecisions() {
+        return ResponseBuilder.success(Arrays.asList(Qualification.values()));
     }
 }

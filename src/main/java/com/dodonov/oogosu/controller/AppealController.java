@@ -1,5 +1,6 @@
 package com.dodonov.oogosu.controller;
 
+import com.dodonov.oogosu.domain.enums.Decision;
 import com.dodonov.oogosu.domain.enums.Difficulty;
 import com.dodonov.oogosu.dto.EmployeeDto;
 import com.dodonov.oogosu.dto.appeal.*;
@@ -27,7 +28,6 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class AppealController {
     private final AppealService appealService;
-    private final EmployeeService employeeService;
 
     @ApiOperation(value = "Создание обращения")
     @PostMapping(value = "/create")
@@ -46,13 +46,6 @@ public class AppealController {
     @PostMapping(value = "/find-by-criteria")
     public ResponseEntity<CollectionResponse<AppealDto>> findByCriteria(@RequestBody AppealCriteria dto) {
         return ResponseBuilder.success(appealService.findByCriteria(dto));
-    }
-
-    @ApiOperation(value = "Найти подходящих исполнителей")
-    @PostMapping(value = "/find-employees-matching")
-    @PreAuthorize("hasAnyRole({T(com.dodonov.oogosu.config.security.UserRole).ADMIN, T(com.dodonov.oogosu.config.security.UserRole).LEAD})")
-    public ResponseEntity<CollectionResponse<EmployeeDto>> findEmployeesMatching(@RequestBody AppealMatchingEmployeeDto dto) {
-        return ResponseBuilder.success(EmployeeMapper.INSTANCE.toDtos(employeeService.findEmployeesMatching(dto)));
     }
 
     @ApiOperation(value = "Назначить обращение на сотрудника")
@@ -94,5 +87,11 @@ public class AppealController {
     @PreAuthorize("hasAnyRole({T(com.dodonov.oogosu.config.security.UserRole).ADMIN, T(com.dodonov.oogosu.config.security.UserRole).LEAD})")
     public ResponseEntity<CollectionResponse<Difficulty>> getDifficulties() {
         return ResponseBuilder.success(Arrays.asList(Difficulty.values()));
+    }
+
+    @ApiOperation(value = "Получить решение")
+    @GetMapping(value = "/decisions")
+    public ResponseEntity<CollectionResponse<Decision>> getDecisions() {
+        return ResponseBuilder.success(Arrays.asList(Decision.values()));
     }
 }
