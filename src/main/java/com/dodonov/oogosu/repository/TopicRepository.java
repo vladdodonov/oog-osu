@@ -9,7 +9,8 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface TopicRepository extends BaseRepository<Topic> {
-    List<Topic> findAllByDepartment(Department department);
+    @Query("select t from Topic t where t.department = :department and coalesce(t.archived, false) is false")
+    List<Topic> findAllByDepartment(@Param("department") Department department);
     @Modifying
     @Query(value = "update d_topic set archived = true where id = :id", nativeQuery = true)
     void archive(@Param("id") Long id);

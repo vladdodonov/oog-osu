@@ -29,6 +29,13 @@ public class TopicController {
         return ResponseBuilder.success(topics);
     }
 
+    @ApiOperation(value = "Получение тем обращения")
+    @GetMapping(value = "/find-all-with-deleted")
+    public ResponseEntity<CollectionResponse<TopicDto>> getAllTopicsWithDeleted() {
+        var topics = TopicDtoMapper.INSTANCE.toDtos(topicService.findAllWithDeleted());
+        return ResponseBuilder.success(topics);
+    }
+
     @ApiOperation(value = "Создать новую тему и добавить к департаменту")
     @PostMapping(value = "/{departmentId}")
     @PreAuthorize("hasRole(T(com.dodonov.oogosu.config.security.UserRole).ADMIN)")

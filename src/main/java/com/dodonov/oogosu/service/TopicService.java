@@ -8,6 +8,8 @@ import java.util.List;
 public interface TopicService {
     List<Topic> findAll();
 
+    List<Topic> findAllWithDeleted();
+
     List<Topic> findAllByDepartment(Department department);
 
     Topic addTopicToDepartment(Topic topic);

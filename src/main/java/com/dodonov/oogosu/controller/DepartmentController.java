@@ -1,6 +1,5 @@
 package com.dodonov.oogosu.controller;
 
-import com.dodonov.oogosu.domain.enums.Qualification;
 import com.dodonov.oogosu.dto.DepartmentDto;
 import com.dodonov.oogosu.dto.EmployeeDto;
 import com.dodonov.oogosu.mapstruct.DepartmentMapper;
@@ -17,8 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-
 
 @Api(tags = "topic", description = "Работа с департаментами")
 @RestController
@@ -30,9 +27,17 @@ public class DepartmentController {
 
     @ApiOperation(value = "Получение всех департаментов")
     @GetMapping(value = "/find-all")
-    @PreAuthorize("hasRole(T(com.dodonov.oogosu.config.security.UserRole).ADMIN)")
+    @PreAuthorize("hasAnyRole({T(com.dodonov.oogosu.config.security.UserRole).ADMIN, T(com.dodonov.oogosu.config.security.UserRole).INSPECTOR})")
     public ResponseEntity<CollectionResponse<DepartmentDto>> getAllDepartments() {
         var topics = DepartmentMapper.INSTANCE.toDtos(departmentService.findAll());
+        return ResponseBuilder.success(topics);
+    }
+
+    @ApiOperation(value = "Получение всех департаментов (с удаленными)")
+    @GetMapping(value = "/find-all-with-deleted")
+    @PreAuthorize("hasAnyRole({T(com.dodonov.oogosu.config.security.UserRole).ADMIN, T(com.dodonov.oogosu.config.security.UserRole).INSPECTOR})")
+    public ResponseEntity<CollectionResponse<DepartmentDto>> getAllDepartmentsWithDeleted() {
+        var topics = DepartmentMapper.INSTANCE.toDtos(departmentService.findAllWithDeleted());
         return ResponseBuilder.success(topics);
     }
 
@@ -57,12 +62,5 @@ public class DepartmentController {
     public ResponseEntity deleteTopic(@PathVariable(value = "departmentId") final Long departmentId) {
         departmentService.deleteById(departmentId);
         return ResponseBuilder.success();
-    }
-
-    @ApiOperation(value = "Получить квалификацию")
-    @GetMapping(value = "/qualifications")
-    @PreAuthorize("hasRole(T(com.dodonov.oogosu.config.security.UserRole).ADMIN)")
-    public ResponseEntity<CollectionResponse<Qualification>> getDecisions() {
-        return ResponseBuilder.success(Arrays.asList(Qualification.values()));
     }
 }

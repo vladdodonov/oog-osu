@@ -1,6 +1,9 @@
 package com.dodonov.oogosu.controller;
 
+import com.dodonov.oogosu.config.security.UserRole;
+import com.dodonov.oogosu.domain.enums.Qualification;
 import com.dodonov.oogosu.dto.EmployeeDto;
+import com.dodonov.oogosu.dto.EmployeeSaveDto;
 import com.dodonov.oogosu.dto.appeal.AppealMatchingEmployeeDto;
 import com.dodonov.oogosu.mapstruct.EmployeeMapper;
 import com.dodonov.oogosu.service.EmployeeService;
@@ -14,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
+
 
 @Api(tags = "employee", description = "Работа с работниками")
 @RestController
@@ -24,7 +29,7 @@ public class EmployeeController {
 
     @ApiOperation(value = "Получение всех работников по департаменту")
     @GetMapping(value = "/{departmentId}")
-    @PreAuthorize("hasRole(T(com.dodonov.oogosu.config.security.UserRole).ADMIN)")
+    @PreAuthorize("hasAnyRole({T(com.dodonov.oogosu.config.security.UserRole).ADMIN, T(com.dodonov.oogosu.config.security.UserRole).INSPECTOR})")
     public ResponseEntity<CollectionResponse<EmployeeDto>> getAllByDepartment(@PathVariable(name = "departmentId") Long departmentId) {
         var employees = EmployeeMapper.INSTANCE.toDtos(employeeService.findAllByDepartmentId(departmentId));
         return ResponseBuilder.success(employees);
@@ -45,6 +50,14 @@ public class EmployeeController {
         return ResponseBuilder.success(employees);
     }
 
+    @ApiOperation(value = "Получение всех исполнителей по департаменту авторизованного начальника (с удаленными)")
+    @GetMapping("/with-deleted")
+    @PreAuthorize("hasAnyRole({T(com.dodonov.oogosu.config.security.UserRole).ADMIN, T(com.dodonov.oogosu.config.security.UserRole).LEAD, T(com.dodonov.oogosu.config.security.UserRole).INSPECTOR})")
+    public ResponseEntity<CollectionResponse<EmployeeDto>> getAllFromMyDepartmentWithDeleted() {
+        var employees = EmployeeMapper.INSTANCE.toDtos(employeeService.getAllFromMyDepartmentWithDeleted());
+        return ResponseBuilder.success(employees);
+    }
+
     @ApiOperation(value = "Получить текущего сотрудника")
     @GetMapping(value = "/current")
     public ResponseEntity<Response<EmployeeDto>> getAllByDepartment() {
@@ -52,12 +65,11 @@ public class EmployeeController {
         return ResponseBuilder.success(employee);
     }
 
-    @ApiOperation(value = "Сохранить работника")
+    @ApiOperation(value = "Сохранить нового или отредактировать существующего работника")
     @PostMapping
     @PreAuthorize("hasRole(T(com.dodonov.oogosu.config.security.UserRole).ADMIN)")
-    public ResponseEntity<Response<EmployeeDto>> saveDepartment(@RequestBody EmployeeDto dto) {
-        var employee = EmployeeMapper.INSTANCE.toEntity(dto);
-        return ResponseBuilder.success(EmployeeMapper.INSTANCE.toDto(employeeService.save(employee)));
+    public ResponseEntity<Response<EmployeeDto>> saveDepartment(@RequestBody EmployeeSaveDto dto) {
+        return ResponseBuilder.success(EmployeeMapper.INSTANCE.toDto(employeeService.save(dto)));
     }
 
     @ApiOperation(value = "Удалить Работника")
@@ -66,5 +78,21 @@ public class EmployeeController {
     public ResponseEntity deleteTopic(@PathVariable(value = "id") final Long departmentId) {
         employeeService.deleteById(departmentId);
         return ResponseBuilder.success();
+    }
+
+
+    @ApiOperation(value = "Получить квалификацию")
+    @GetMapping(value = "/qualifications")
+    @PreAuthorize("hasAnyRole({T(com.dodonov.oogosu.config.security.UserRole).ADMIN, T(com.dodonov.oogosu.config.security.UserRole).LEAD, T(com.dodonov.oogosu.config.security.UserRole).INSPECTOR})")
+    public ResponseEntity<CollectionResponse<Qualification>> getDecisions() {
+        return ResponseBuilder.success(Arrays.asList(Qualification.values()));
+    }
+
+
+    @ApiOperation(value = "Получить роли")
+    @GetMapping(value = "/roles")
+    @PreAuthorize("hasAnyRole({T(com.dodonov.oogosu.config.security.UserRole).ADMIN, T(com.dodonov.oogosu.config.security.UserRole).LEAD, T(com.dodonov.oogosu.config.security.UserRole).INSPECTOR})")
+    public ResponseEntity<CollectionResponse<UserRole>> getRoles() {
+        return ResponseBuilder.success(Arrays.asList(UserRole.values()));
     }
 }

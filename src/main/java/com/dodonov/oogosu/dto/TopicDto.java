@@ -15,4 +15,6 @@ public class TopicDto {
     private Long id;
     @ApiModelProperty(value = "Наименование")
     private String name;
+    @ApiModelProperty(value = "Архивировано")
+    private Boolean archived;
 }

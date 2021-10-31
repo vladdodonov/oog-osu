@@ -35,7 +35,7 @@ public class ReportServiceImpl implements ReportService {
                 "with departments as ( " +
                 "    select dep.id as depId, dep.name as depName " +
                 "    from d_department dep " +
-                "    where dep.archived is not true " +
+                "    where dep.archived is not true and dep.id <> (select dd.id from d_department dd where dd.name = :admin) " +
                 "), " +
                 "     all_cnt as ( " +
                 "         select count(*) as appCnt, dep.depId as depId " +
@@ -76,6 +76,7 @@ public class ReportServiceImpl implements ReportService {
                 .unwrap(org.hibernate.query.Query.class)
                 .setResultTransformer(transformer())
                 .setParameter("positive", Decision.POSITIVE.name())
+                .setParameter("admin", "Департамент админа")
                 .getResultList();
         var dto = new ReportDto();
         dto.setDepartmentDataList(departmentData);

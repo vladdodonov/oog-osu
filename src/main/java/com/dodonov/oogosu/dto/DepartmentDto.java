@@ -18,4 +18,7 @@ public class DepartmentDto {
 
     @ApiModelProperty(value = "Название")
     private String name;
+
+    @ApiModelProperty(value = "Архивировано")
+    private Boolean archived;
 }

@@ -10,7 +10,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface EmployeeRepository extends BaseRepository<Employee> {
-    Optional<Employee> findByUsername(String username);
+    @Query("select e from Employee e where e.username = :username and coalesce(e.archived, false) is false")
+    Optional<Employee> findByUsername(@Param("username") String username);
 
     @Modifying
     @Query(value = "update d_employee set archived = true where id = :id", nativeQuery = true)
@@ -30,9 +31,23 @@ public interface EmployeeRepository extends BaseRepository<Employee> {
 
     @Query(value = "select emp " +
             "from Employee emp " +
+            "left join Principal p on emp.username = p.username " +
+            "where emp.department.id = :departmentId " +
+            "and (p.role is null or p.role = 'EXECUTOR')")
+    List<Employee> findAllExecutorsByDepartmentIdWithDeleted(@Param("departmentId") Long departmentId);
+
+    @Query(value = "select emp " +
+            "from Employee emp " +
             "where emp.department.id = :departmentId " +
             "and coalesce(emp.archived, false) is false")
     List<Employee> findAllByDepartmentId(@Param("departmentId") Long departmentId);
 
-    Optional<Employee> findByQualificationAndDepartment_id(Qualification qualification, Long departmentId);
+    @Query(value = "select emp " +
+            "from Employee emp " +
+            "where emp.department.id = :departmentId " +
+            "and emp.qualification = :qual " +
+            "and coalesce(emp.archived, false) is false")
+    Optional<Employee> findByQualificationAndDepartment_id(@Param("qual") Qualification qualification, @Param("departmentId") Long departmentId);
+
+    boolean existsByUsername(String username);
 }

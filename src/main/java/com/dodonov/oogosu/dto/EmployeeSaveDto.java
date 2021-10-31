@@ -1,5 +1,6 @@
 package com.dodonov.oogosu.dto;
 
+import com.dodonov.oogosu.config.security.UserRole;
 import com.dodonov.oogosu.domain.enums.Qualification;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -12,8 +13,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@ApiModel(value = "EmployeeDto", description = "DTO отрудника")
-public class EmployeeDto {
+@ApiModel(value = "EmployeeSaveDto", description = "DTO сохранения сотрудника")
+public class EmployeeSaveDto {
     @ApiModelProperty(value = "Идентификатор")
     private Long id;
     @ApiModelProperty(value = "Имя")
@@ -30,8 +31,10 @@ public class EmployeeDto {
     private DepartmentDto department;
     @ApiModelProperty(value = "Квалификация")
     private Qualification qualification;
-    @ApiModelProperty(value = "Насколько исполнитель подходит")
-    private Long appealsNumber;
-    @ApiModelProperty(value = "Архивировано")
-    private Boolean archived;
+    @ApiModelProperty(value = "Логин")
+    private String username;
+    @ApiModelProperty(value = "Пароль")
+    private String password;
+    @ApiModelProperty(value = "Роль")
+    private UserRole role;
 }

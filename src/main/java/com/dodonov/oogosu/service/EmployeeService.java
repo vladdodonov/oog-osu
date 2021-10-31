@@ -2,7 +2,7 @@ package com.dodonov.oogosu.service;
 
 import com.dodonov.oogosu.domain.dict.Employee;
 import com.dodonov.oogosu.domain.enums.Qualification;
-import com.dodonov.oogosu.dto.appeal.AppealDto;
+import com.dodonov.oogosu.dto.EmployeeSaveDto;
 import com.dodonov.oogosu.dto.appeal.AppealMatchingEmployeeDto;
 
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 public interface EmployeeService {
-    Employee save(Employee employee);
+    Employee save(EmployeeSaveDto employee);
 
     void deleteById(Long id);
 
@@ -25,4 +25,6 @@ public interface EmployeeService {
     Employee getCurrent();
 
     List<Employee> getAllFromMyDepartment();
+
+    List<Employee> getAllFromMyDepartmentWithDeleted();
 }
