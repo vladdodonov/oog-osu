@@ -37,7 +37,7 @@ public class EmployeeController {
         return ResponseBuilder.success(EmployeeMapper.INSTANCE.toDtos(employeeService.findEmployeesMatching(dto)));
     }
 
-    @ApiOperation(value = "Получение всех работников по департаменту")
+    @ApiOperation(value = "Получение всех исполнителей по департаменту авторизованного начальника")
     @GetMapping
     @PreAuthorize("hasAnyRole({T(com.dodonov.oogosu.config.security.UserRole).ADMIN, T(com.dodonov.oogosu.config.security.UserRole).LEAD})")
     public ResponseEntity<CollectionResponse<EmployeeDto>> getAllFromMyDepartment() {

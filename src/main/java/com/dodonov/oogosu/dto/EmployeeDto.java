@@ -22,8 +22,6 @@ public class EmployeeDto {
     private String lastName;
     @ApiModelProperty(value = "Отчество")
     private String middleName;
-    @ApiModelProperty(value = "Адрес")
-    private String address;
     @ApiModelProperty(value = "Емейл")
     private String email;
     @ApiModelProperty(value = "Телефон")

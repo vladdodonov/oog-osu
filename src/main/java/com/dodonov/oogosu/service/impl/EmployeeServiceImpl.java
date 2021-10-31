@@ -50,7 +50,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional(readOnly = true)
     public List<Employee> findAllByDepartmentId(Long departmentId) {
-        return employeeRepository.findAllByDepartment_id(departmentId).stream().filter(a -> a.getArchived() == null).collect(toList());
+        return employeeRepository.findAllByDepartmentId(departmentId);
     }
 
     @Override
@@ -105,8 +105,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional(readOnly = true)
     public List<Employee> getAllFromMyDepartment() {
-        return employeeRepository.findAllByDepartment_id(securityService.getCurrentDepartment().getId()).stream()
-                .filter(a -> a.getArchived() == null && a.getQualification() != LEAD)
-                .collect(toList());
+        return employeeRepository.findAllExecutorsByDepartmentId(securityService.getCurrentDepartment().getId());
     }
 }

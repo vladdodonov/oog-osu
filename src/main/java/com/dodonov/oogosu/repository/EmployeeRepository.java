@@ -20,7 +20,19 @@ public interface EmployeeRepository extends BaseRepository<Employee> {
     @Query(value = "update d_employee set archived = true where department_id = :id", nativeQuery = true)
     void archiveByDepartment(@Param("id") Long departmentId);
 
-    List<Employee> findAllByDepartment_id(Long departmentId);
+    @Query(value = "select emp " +
+            "from Employee emp " +
+            "join Principal p on emp.username = p.username " +
+            "where emp.department.id = :departmentId " +
+            "and p.role = 'EXECUTOR' " +
+            "and coalesce(emp.archived, false) is false")
+    List<Employee> findAllExecutorsByDepartmentId(@Param("departmentId") Long departmentId);
+
+    @Query(value = "select emp " +
+            "from Employee emp " +
+            "where emp.department.id = :departmentId " +
+            "and coalesce(emp.archived, false) is false")
+    List<Employee> findAllByDepartmentId(@Param("departmentId") Long departmentId);
 
     Optional<Employee> findByQualificationAndDepartment_id(Qualification qualification, Long departmentId);
 }
