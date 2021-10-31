@@ -16,6 +16,8 @@ public interface EmployeeService {
 
     List<Employee> findAllByDepartmentId(Long departmentId);
 
+    List<Employee> findAllByDepartmentIdWithDeleted(Long departmentId);
+
     Employee findLeadByDepartmentId(Long departmentId);
 
     List<Employee> findEmployeesMatching(AppealMatchingEmployeeDto dto);
@@ -27,4 +29,6 @@ public interface EmployeeService {
     List<Employee> getAllFromMyDepartment();
 
     List<Employee> getAllFromMyDepartmentWithDeleted();
+
+    Employee restore(Long employeeId);
 }

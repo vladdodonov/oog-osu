@@ -35,6 +35,14 @@ public class EmployeeController {
         return ResponseBuilder.success(employees);
     }
 
+    @ApiOperation(value = "Получение всех работников по департаменту (с удаленными)")
+    @GetMapping(value = "/with-deleted/{departmentId}")
+    @PreAuthorize("hasAnyRole({T(com.dodonov.oogosu.config.security.UserRole).ADMIN, T(com.dodonov.oogosu.config.security.UserRole).INSPECTOR})")
+    public ResponseEntity<CollectionResponse<EmployeeDto>> getAllByDepartmentWithDeleted(@PathVariable(name = "departmentId") Long departmentId) {
+        var employees = EmployeeMapper.INSTANCE.toDtos(employeeService.findAllByDepartmentIdWithDeleted(departmentId));
+        return ResponseBuilder.success(employees);
+    }
+
     @ApiOperation(value = "Найти подходящих исполнителей")
     @PostMapping(value = "/find-employees-matching")
     @PreAuthorize("hasAnyRole({T(com.dodonov.oogosu.config.security.UserRole).ADMIN, T(com.dodonov.oogosu.config.security.UserRole).LEAD})")
@@ -75,9 +83,16 @@ public class EmployeeController {
     @ApiOperation(value = "Удалить Работника")
     @DeleteMapping(value = "/{id}")
     @PreAuthorize("hasRole(T(com.dodonov.oogosu.config.security.UserRole).ADMIN)")
-    public ResponseEntity deleteTopic(@PathVariable(value = "id") final Long departmentId) {
+    public ResponseEntity deleteEmployee(@PathVariable(value = "id") final Long departmentId) {
         employeeService.deleteById(departmentId);
         return ResponseBuilder.success();
+    }
+
+    @ApiOperation(value = "восстановить Работника")
+    @PostMapping(value = "/restore/{id}")
+    @PreAuthorize("hasRole(T(com.dodonov.oogosu.config.security.UserRole).ADMIN)")
+    public ResponseEntity restoreEmployee(@PathVariable(value = "id") final Long departmentId) {
+        return ResponseBuilder.success(EmployeeMapper.INSTANCE.toDto(employeeService.restore(departmentId)));
     }
 
 

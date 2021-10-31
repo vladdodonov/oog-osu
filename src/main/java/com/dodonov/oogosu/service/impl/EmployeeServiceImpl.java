@@ -33,6 +33,7 @@ import static com.dodonov.oogosu.domain.enums.Qualification.MIDDLE;
 import static com.dodonov.oogosu.domain.enums.Qualification.SENIOR;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.BooleanUtils.isTrue;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Service
@@ -46,7 +47,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional
     public Employee save(EmployeeSaveDto saveDto) {
-        if (employeeRepository.existsByUsername(saveDto.getUsername())){
+        if (employeeRepository.existsByUsername(saveDto.getUsername())) {
             throw new RuntimeException("Уже есть с таким логином");
         }
         if (saveDto.getDepartment() == null || saveDto.getDepartment().getId() == null) {
@@ -98,7 +99,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                     principalFromDb.setRole(UserRole.LEAD);
                 }
             }
-            if (empFromDb.getDepartment() == null){
+            if (empFromDb.getDepartment() == null) {
                 empFromDb.setDepartment(Department.builder().id(saveDto.getDepartment().getId()).build());
             }
             principalRepository.save(principalFromDb);
@@ -125,9 +126,26 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Transactional
+    public Employee restore(Long id) {
+        var emp = employeeRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        if (isTrue(emp.getDepartment().getArchived())) {
+            throw new RuntimeException("Работник принадлежит к архивированному департаменту");
+        }
+        emp.setArchived(null);
+        return employeeRepository.save(emp);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<Employee> findAllByDepartmentId(Long departmentId) {
         return employeeRepository.findAllByDepartmentId(departmentId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Employee> findAllByDepartmentIdWithDeleted(Long departmentId) {
+        return employeeRepository.findAllByDepartmentIdWithDeleted(departmentId);
     }
 
     @Override

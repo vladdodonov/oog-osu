@@ -56,4 +56,15 @@ public class TopicServiceImpl implements TopicService {
     public void deleteById(Long topicId) {
         topicRepository.archive(topicId);
     }
+
+    @Override
+    @Transactional
+    public Topic restore(Long topicId) {
+        var topic = topicRepository.findById(topicId).orElseThrow(EntityNotFoundException::new);
+        if (isTrue(topic.getDepartment().getArchived())){
+            throw new RuntimeException("Тема принадлежит к архивированному департаменту");
+        }
+        topic.setArchived(null);
+        return topicRepository.save(topic);
+    }
 }

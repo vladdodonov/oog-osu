@@ -15,4 +15,6 @@ public interface TopicService {
     Topic addTopicToDepartment(Topic topic);
 
     void deleteById(Long topicId);
+
+    Topic restore(Long topicId);
 }

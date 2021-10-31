@@ -58,4 +58,11 @@ public class TopicController {
         topicService.deleteById(topicId);
         return ResponseBuilder.success();
     }
+
+    @ApiOperation(value = "Восстановить тему")
+    @PostMapping(value = "/restore/{topicId}")
+    @PreAuthorize("hasRole(T(com.dodonov.oogosu.config.security.UserRole).ADMIN)")
+    public ResponseEntity restoreTopic(@PathVariable(value = "topicId") final Long topicId) {
+        return ResponseBuilder.success(topicService.restore(topicId));
+    }
 }

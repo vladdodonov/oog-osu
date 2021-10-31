@@ -44,6 +44,11 @@ public interface EmployeeRepository extends BaseRepository<Employee> {
 
     @Query(value = "select emp " +
             "from Employee emp " +
+            "where emp.department.id = :departmentId")
+    List<Employee> findAllByDepartmentIdWithDeleted(@Param("departmentId") Long departmentId);
+
+    @Query(value = "select emp " +
+            "from Employee emp " +
             "where emp.department.id = :departmentId " +
             "and emp.qualification = :qual " +
             "and coalesce(emp.archived, false) is false")

@@ -59,8 +59,15 @@ public class DepartmentController {
     @ApiOperation(value = "Удалить департамент")
     @DeleteMapping(value = "/{departmentId}")
     @PreAuthorize("hasRole(T(com.dodonov.oogosu.config.security.UserRole).ADMIN)")
-    public ResponseEntity deleteTopic(@PathVariable(value = "departmentId") final Long departmentId) {
+    public ResponseEntity deleteDepartment(@PathVariable(value = "departmentId") final Long departmentId) {
         departmentService.deleteById(departmentId);
         return ResponseBuilder.success();
+    }
+
+    @ApiOperation(value = "Восстановить департамент")
+    @PostMapping(value = "/restore/{departmentId}")
+    @PreAuthorize("hasRole(T(com.dodonov.oogosu.config.security.UserRole).ADMIN)")
+    public ResponseEntity restoreDepartment(@PathVariable(value = "departmentId") final Long departmentId) {
+        return ResponseBuilder.success(DepartmentMapper.INSTANCE.toDto(departmentService.restore(departmentId)));
     }
 }

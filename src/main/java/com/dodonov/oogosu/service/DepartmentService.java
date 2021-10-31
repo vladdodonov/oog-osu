@@ -10,4 +10,6 @@ public interface DepartmentService {
     Department findById(Long departmentId);
     void deleteById(Long departmentId);
     Department saveDepartment(Department department);
+
+    Department restore(Long departmentId);
 }
