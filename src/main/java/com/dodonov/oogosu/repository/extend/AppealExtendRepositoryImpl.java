@@ -8,6 +8,7 @@ import com.dodonov.oogosu.domain.dict.Department;
 import com.dodonov.oogosu.domain.dict.Employee;
 import com.dodonov.oogosu.domain.dict.Topic;
 import com.dodonov.oogosu.domain.enums.Qualification;
+import com.dodonov.oogosu.domain.enums.State;
 import com.dodonov.oogosu.dto.RangeDto;
 import com.dodonov.oogosu.dto.appeal.AppealCriteria;
 import com.dodonov.oogosu.dto.appeal.AppealDto;
@@ -54,11 +55,13 @@ public class AppealExtendRepositoryImpl implements AppealExtendRepository {
                 "left join fetch Appeal a on a.executor = emp " +
                 "where emp.department.id = :departmentId " +
                 "and emp.qualification in (:qualifications) " +
+                "and a.state != :sent " +
                 "and coalesce(emp.archived, false) is false " +
                 "group by emp.id ";
         return entityManager.createQuery(query, Tuple.class)
                 .setParameter("departmentId", departmentId)
                 .setParameter("qualifications", qualifications)
+                .setParameter("sent", State.SENT)
                 .getResultStream()
                 .collect(toMap(
                         tuple -> ((Employee) tuple.get("emp")),
