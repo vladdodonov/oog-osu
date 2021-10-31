@@ -9,7 +9,7 @@ public class SqlUtils {
 
     public static Long toLong(Object obj) {
         if (obj == null) {
-            return null;
+            return 0L;
         } else if (obj instanceof Number) {
             return ((Number) obj).longValue();
         } else {
@@ -19,7 +19,7 @@ public class SqlUtils {
 
     public static Double toDouble(Object obj) {
         if (obj == null) {
-            return null;
+            return 0.0;
         } else if (obj instanceof Number) {
             return ((Number) obj).doubleValue();
         } else {

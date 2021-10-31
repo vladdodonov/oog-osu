@@ -62,12 +62,12 @@ public class ReportServiceImpl implements ReportService {
                 "         group by depId " +
                 "     ) " +
                 " " +
-                "select dep.depId                                              as depId, " +
-                "       dep.depName                                            as depName, " +
-                "       all_cnt.appCnt                                         as appCnt, " +
-                "       prolonged_cnt.prolongedCnt * 100 / all_cnt.appCnt      as prolongedCnt, " +
-                "       complaints_cnt.complaintsCnt * 100 / all_cnt.appCnt    as complaintsCnt, " +
-                "       returned_cnt.returnedCnt * 100 / all_cnt.appCnt        as returnedCnt " +
+                "select dep.depId                                                                                         as depId, " +
+                "       dep.depName                                                                                       as depName, " +
+                "       all_cnt.appCnt                                                                                    as appCnt, " +
+                "       prolonged_cnt.prolongedCnt * 100 / case when all_cnt.appCnt = 0 then 1 else all_cnt.appCnt end    as prolongedCnt, " +
+                "       complaints_cnt.complaintsCnt * 100 / case when all_cnt.appCnt = 0 then 1 else all_cnt.appCnt end  as complaintsCnt, " +
+                "       returned_cnt.returnedCnt * 100 / case when all_cnt.appCnt = 0 then 1 else all_cnt.appCnt end      as returnedCnt " +
                 "from departments dep " +
                 "         left join all_cnt on dep.depId = all_cnt.depId " +
                 "         left join prolonged_cnt on dep.depId = prolonged_cnt.depId " +
