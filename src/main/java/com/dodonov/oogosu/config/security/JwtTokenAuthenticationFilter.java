@@ -33,6 +33,7 @@ public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
         response.addHeader("Access-Control-Allow-Credentials", "true");
         response.addHeader("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
         response.addHeader("Access-Control-Allow-Headers", "Authorization, Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
+        response.addHeader("Access-Control-Expose-Headers", "Authorization");
 
         // 2. validate the header and check the prefix
         if (header == null || !header.startsWith(jwtConfig.getPrefix())) {
