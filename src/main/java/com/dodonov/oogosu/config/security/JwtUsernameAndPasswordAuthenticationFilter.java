@@ -3,6 +3,7 @@ package com.dodonov.oogosu.config.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,7 +18,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -63,6 +66,7 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
                                             Authentication auth) throws IOException, ServletException {
 
         Long now = System.currentTimeMillis();
+        var expiration = new Date(now + jwtConfig.getExpiration() * 1000);
         String token = Jwts.builder()
                 .setSubject(auth.getName())
                 // Convert to list of strings.
@@ -70,9 +74,20 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
                 .claim("authorities", auth.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                 .setIssuedAt(new Date(now))
-                .setExpiration(new Date(now + jwtConfig.getExpiration() * 1000))  // in milliseconds
+                .setExpiration(expiration)  // in milliseconds
                 .signWith(SignatureAlgorithm.HS512, jwtConfig.getSecret().getBytes())
                 .compact();
+        var resBody = new UsernameAndAuthorities();
+        resBody.setToken("Bearer " + token);
+        resBody.setExpirationDate(expiration);
+        resBody.setAuthorities(auth.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
+        resBody.setUsername(auth.getName());
+        response.resetBuffer();
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+        response.getOutputStream().print(new ObjectMapper().writeValueAsString(resBody));
+        response.flushBuffer();
 
         // Add token to header
         response.addHeader(jwtConfig.getHeader(), jwtConfig.getPrefix() + token);
@@ -96,6 +111,45 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
 
         public void setPassword(String password) {
             this.password = password;
+        }
+    }
+
+    private static class UsernameAndAuthorities {
+        private String username;
+        private List<String> authorities = new ArrayList<>();
+        private Date expirationDate;
+        private String token;
+
+        public String getToken() {
+            return token;
+        }
+
+        public void setToken(String token) {
+            this.token = token;
+        }
+
+        public Date getExpirationDate() {
+            return expirationDate;
+        }
+
+        public void setExpirationDate(Date expirationDate) {
+            this.expirationDate = expirationDate;
+        }
+
+        public List<String> getAuthorities() {
+            return authorities;
+        }
+
+        public void setAuthorities(List<String> authorities) {
+            this.authorities = authorities;
+        }
+
+        public String getUsername() {
+            return username;
+        }
+
+        public void setUsername(String username) {
+            this.username = username;
         }
     }
 }
