@@ -29,6 +29,7 @@ public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
 
         // 1. get the authentication header. Tokens are supposed to be passed in the authentication header
         String header = request.getHeader(jwtConfig.getHeader());
+        response.setHeader("Access-Control-Allow-Origin", "*");
 
         // 2. validate the header and check the prefix
         if (header == null || !header.startsWith(jwtConfig.getPrefix())) {
