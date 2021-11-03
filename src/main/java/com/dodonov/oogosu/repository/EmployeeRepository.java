@@ -38,6 +38,19 @@ public interface EmployeeRepository extends BaseRepository<Employee> {
 
     @Query(value = "select emp " +
             "from Employee emp " +
+            "join Principal p on emp.username = p.username " +
+            "where p.role = 'EXECUTOR' " +
+            "and coalesce(emp.archived, false) is false")
+    List<Employee> findAllExecutors();
+
+    @Query(value = "select emp " +
+            "from Employee emp " +
+            "left join Principal p on emp.username = p.username " +
+            "where (p.role is null or p.role = 'EXECUTOR')")
+    List<Employee> findAllExecutorsWithDeleted();
+
+    @Query(value = "select emp " +
+            "from Employee emp " +
             "where emp.department.id = :departmentId " +
             "and coalesce(emp.archived, false) is false")
     List<Employee> findAllByDepartmentId(@Param("departmentId") Long departmentId);

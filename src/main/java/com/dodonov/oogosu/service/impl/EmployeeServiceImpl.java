@@ -200,12 +200,18 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional(readOnly = true)
     public List<Employee> getAllFromMyDepartment() {
+        if (securityService.hasRole(UserRole.ADMIN)){
+            return employeeRepository.findAllExecutors();
+        }
         return employeeRepository.findAllExecutorsByDepartmentId(securityService.getCurrentDepartment().getId());
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Employee> getAllFromMyDepartmentWithDeleted() {
+        if (securityService.hasRole(UserRole.ADMIN)){
+            return employeeRepository.findAllExecutorsWithDeleted();
+        }
         return employeeRepository.findAllExecutorsByDepartmentIdWithDeleted(securityService.getCurrentDepartment().getId());
     }
 }
