@@ -28,7 +28,6 @@ import static com.dodonov.oogosu.domain.dict.Employee.COMPARATOR_EMPLOYEE_APPEAL
 import static com.dodonov.oogosu.domain.enums.Difficulty.HARD;
 import static com.dodonov.oogosu.domain.enums.Difficulty.MEDIUM;
 import static com.dodonov.oogosu.domain.enums.Qualification.JUNIOR;
-import static com.dodonov.oogosu.domain.enums.Qualification.LEAD;
 import static com.dodonov.oogosu.domain.enums.Qualification.MIDDLE;
 import static com.dodonov.oogosu.domain.enums.Qualification.SENIOR;
 import static java.time.temporal.ChronoUnit.DAYS;
@@ -54,17 +53,18 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new RuntimeException("Не представлен департамент");
         }
 
-        if (UserRole.LEAD.equals(saveDto.getRole()) || LEAD.equals(saveDto.getQualification())) {
-            var lead = employeeRepository
-                    .findByQualificationAndDepartment_id(LEAD, saveDto.getDepartment().getId());
-            if (lead.isPresent()) {
-                if (saveDto.getId() != null) {
-                    if (!lead.get().getId().equals(saveDto.getId())) {
-                        throw new RuntimeException("Должен быть только один начальник. Сначала отредактируйте старого");
-                    }
+        var leadOpt = employeeRepository
+                .findLeadByDepartmentId(saveDto.getDepartment().getId());
+        var leadIsPresent = leadOpt.isPresent();
+        if (UserRole.LEAD.equals(saveDto.getRole())) {
+            if (leadIsPresent) {
+                if (saveDto.getId() == null || !leadOpt.get().getId().equals(saveDto.getId())) {
                     throw new RuntimeException("Смена начальника - отдельный эндпойнт");
                 }
             }
+        }
+        if (!leadIsPresent){
+            saveDto.setRole(UserRole.LEAD);
         }
         if (UserRole.INSPECTOR.equals(saveDto.getRole()) || UserRole.ADMIN.equals(saveDto.getRole())) {
             saveDto.setQualification(SENIOR);
@@ -76,6 +76,9 @@ public class EmployeeServiceImpl implements EmployeeService {
                     .orElseThrow(EntityNotFoundException::new);
             if (saveDto.getRole() != null) {
                 principalFromDb.setRole(saveDto.getRole());
+            }
+            if (!leadIsPresent) {
+                principalFromDb.setRole(UserRole.LEAD);
             }
             if (saveDto.getPassword() != null) {
                 principalFromDb.setPassword(saveDto.getPassword());
@@ -97,9 +100,6 @@ public class EmployeeServiceImpl implements EmployeeService {
             }
             if (saveDto.getQualification() != null) {
                 empFromDb.setQualification(saveDto.getQualification());
-                if (LEAD.equals(saveDto.getQualification())) {
-                    principalFromDb.setRole(UserRole.LEAD);
-                }
             }
             if (empFromDb.getDepartment() == null) {
                 empFromDb.setDepartment(Department.builder().id(saveDto.getDepartment().getId()).build());
@@ -123,7 +123,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public void deleteById(Long id) {
         var principalFromDb = principalRepository.findByEmployeeId(id)
                 .orElseThrow(EntityNotFoundException::new);
-        principalRepository.deleteById(principalFromDb.getUsername());
+        principalRepository.archive(principalFromDb.getUsername());
         employeeRepository.archive(id);
     }
 
@@ -135,6 +135,10 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new RuntimeException("Работник принадлежит к архивированному департаменту");
         }
         emp.setArchived(null);
+        var principalFromDb = principalRepository.findByEmployeeId(id)
+                .orElseThrow(EntityNotFoundException::new);
+        principalFromDb.setArchived(null);
+        principalRepository.save(principalFromDb);
         return employeeRepository.save(emp);
     }
 
@@ -158,7 +162,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Employee findLeadByDepartmentId(Long departmentId) {
-        return employeeRepository.findByQualificationAndDepartment_id(Qualification.LEAD, departmentId).orElseThrow(EntityNotFoundException::new);
+        return employeeRepository.findLeadByDepartmentId(departmentId).orElseThrow(EntityNotFoundException::new);
     }
 
     @Override
@@ -219,19 +223,17 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     @Transactional
-    public Employee changeLead(Long employeeId, Qualification leadQual) {
+    public Employee changeLead(Long employeeId) {
         var nextLead = employeeRepository.findById(employeeId)
                 .orElseThrow(EntityNotFoundException::new);
         var currentLead = findLeadByDepartmentId(nextLead.getDepartment().getId());
+        if (nextLead.equals(currentLead)) {
+            throw new RuntimeException("Назначаете того же самого начальником");
+        }
         var nextLeadPrincipal = principalRepository.findByUsername(nextLead.getUsername())
                 .orElseThrow(EntityNotFoundException::new);
         var currentLeadPrincipal = principalRepository.findByUsername(currentLead.getUsername())
                 .orElseThrow(EntityNotFoundException::new);
-        if (LEAD.equals(leadQual)) {
-            throw new RuntimeException("Не надо пытаться выставить начальнику, которого заменяем, квалификацию начальника");
-        }
-        currentLead.setQualification(leadQual);
-        nextLead.setQualification(LEAD);
         nextLeadPrincipal.setRole(UserRole.LEAD);
         currentLeadPrincipal.setRole(UserRole.EXECUTOR);
         employeeRepository.save(currentLead);

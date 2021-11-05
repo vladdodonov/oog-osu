@@ -52,8 +52,10 @@ public class AppealExtendRepositoryImpl implements AppealExtendRepository {
                 "select emp as emp, sum(case when a.executor != null and a.state != :sent then 1 else 0 end) as cnt " +
                 "from Employee emp " +
                 "left join fetch Appeal a on a.executor = emp " +
+                "join Principal p on p.username = emp.username " +
                 "where emp.department.id = :departmentId " +
                 "and emp.qualification in (:qualifications) " +
+                "and p.role in ('EXECUTOR') " +
                 "and coalesce(emp.archived, false) is false " +
                 "group by emp.id ";
         return entityManager.createQuery(query, Tuple.class)

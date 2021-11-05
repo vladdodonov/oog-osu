@@ -65,7 +65,7 @@ public class AppealController {
     @PostMapping(value = "/prolong")
     @PreAuthorize("hasAnyRole({T(com.dodonov.oogosu.config.security.UserRole).ADMIN, T(com.dodonov.oogosu.config.security.UserRole).LEAD})")
     public ResponseEntity<Response<AppealDto>> prolong(@RequestBody AppealProlongDto dto) {
-        return ResponseBuilder.success(AppealDtoMapper.INSTANCE.toDto(appealService.prolong(dto.getId(), dto.getDueDate().atTime(LocalTime.MIN))));
+        return ResponseBuilder.success(AppealDtoMapper.INSTANCE.toDto(appealService.prolong(dto.getId(), dto.getDueDate())));
     }
 
     @ApiOperation(value = "Подготовить ответ")

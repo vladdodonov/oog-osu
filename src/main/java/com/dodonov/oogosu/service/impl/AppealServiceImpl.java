@@ -4,7 +4,6 @@ import com.dodonov.oogosu.config.security.UserRole;
 import com.dodonov.oogosu.domain.Appeal;
 import com.dodonov.oogosu.domain.Citizen;
 import com.dodonov.oogosu.domain.dict.Employee;
-import com.dodonov.oogosu.domain.enums.Difficulty;
 import com.dodonov.oogosu.domain.enums.Qualification;
 import com.dodonov.oogosu.domain.enums.State;
 import com.dodonov.oogosu.dto.appeal.*;
@@ -201,7 +200,7 @@ public class AppealServiceImpl implements AppealService {
                 appeal.getCreationDate().toLocalDate(),
                 appeal.getId(),
                 appeal.getAnswer(),
-                getEmployeeRequiusites(employeeRepository.findByQualificationAndDepartment_id(Qualification.LEAD, appeal.getDepartment().getId()), appeal.getDepartment().getName()));
+                getEmployeeRequiusites(employeeRepository.findLeadByDepartmentId(appeal.getDepartment().getId()), appeal.getDepartment().getName()));
         appeal.setAnswer(messageText);
         appeal.setState(State.SENT);
         appeal.setAnswerDate(LocalDateTime.now());

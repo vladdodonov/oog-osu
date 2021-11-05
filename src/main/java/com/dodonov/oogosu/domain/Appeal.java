@@ -6,7 +6,10 @@ import com.dodonov.oogosu.domain.dict.Topic;
 import com.dodonov.oogosu.domain.enums.Decision;
 import com.dodonov.oogosu.domain.enums.Difficulty;
 import com.dodonov.oogosu.domain.enums.State;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
@@ -59,4 +62,8 @@ public class Appeal extends BaseEntity {
     private Boolean isComplaint;
     @Column(name = "is_returned")
     private Boolean isReturned;
+
+    public void setDueDate(LocalDateTime dueDate) {
+        this.dueDate = dueDate.toLocalDate().atStartOfDay();
+    }
 }

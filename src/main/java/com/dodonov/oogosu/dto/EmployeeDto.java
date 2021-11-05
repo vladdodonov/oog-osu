@@ -35,6 +35,4 @@ public class EmployeeDto {
     private Long appealsNumber;
     @ApiModelProperty(value = "Архивировано")
     private Boolean archived;
-    @ApiModelProperty(value = "Роль")
-    private UserRole role;
 }

@@ -18,6 +18,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 
 @Api(tags = "employee", description = "Работа с работниками")
@@ -83,8 +84,8 @@ public class EmployeeController {
     @ApiOperation(value = "Сменить начальника в департаменте")
     @PostMapping("/change-lead")
     @PreAuthorize("hasRole(T(com.dodonov.oogosu.config.security.UserRole).ADMIN)")
-    public ResponseEntity<Response<EmployeeDto>> changeLead(@RequestParam Long employeeId, @RequestParam Qualification leadQual) {
-        return ResponseBuilder.success(EmployeeMapper.INSTANCE.toDto(employeeService.changeLead(employeeId, leadQual)));
+    public ResponseEntity<Response<EmployeeDto>> changeLead(@RequestParam Long employeeId) {
+        return ResponseBuilder.success(EmployeeMapper.INSTANCE.toDto(employeeService.changeLead(employeeId)));
     }
 
     @ApiOperation(value = "Удалить Работника")

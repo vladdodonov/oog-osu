@@ -62,10 +62,11 @@ public interface EmployeeRepository extends BaseRepository<Employee> {
 
     @Query(value = "select emp " +
             "from Employee emp " +
+            "join Principal p on emp.username = p.username " +
             "where emp.department.id = :departmentId " +
-            "and emp.qualification = :qual " +
+            "and p.role = 'LEAD' " +
             "and coalesce(emp.archived, false) is false")
-    Optional<Employee> findByQualificationAndDepartment_id(@Param("qual") Qualification qualification, @Param("departmentId") Long departmentId);
+    Optional<Employee> findLeadByDepartmentId(@Param("departmentId") Long departmentId);
 
     boolean existsByUsername(String username);
 }

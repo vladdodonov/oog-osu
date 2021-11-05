@@ -1,6 +1,5 @@
 package com.dodonov.oogosu.dto.appeal;
 
-import com.dodonov.oogosu.domain.enums.State;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -8,7 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Builder
 @NoArgsConstructor
@@ -20,6 +19,6 @@ public class AppealProlongDto {
     private Long id;
 
     @ApiModelProperty(value = "Новый срок")
-    private LocalDate dueDate;
+    private LocalDateTime dueDate;
 
 }

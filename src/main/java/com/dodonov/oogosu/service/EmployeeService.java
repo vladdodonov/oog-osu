@@ -32,5 +32,5 @@ public interface EmployeeService {
 
     Employee restore(Long employeeId);
 
-    Employee changeLead(Long employeeId, Qualification leadQual);
+    Employee changeLead(Long employeeId);
 }
