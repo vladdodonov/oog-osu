@@ -80,6 +80,13 @@ public class EmployeeController {
         return ResponseBuilder.success(EmployeeMapper.INSTANCE.toDto(employeeService.save(dto)));
     }
 
+    @ApiOperation(value = "Сменить начальника в департаменте")
+    @PostMapping("/change-lead")
+    @PreAuthorize("hasRole(T(com.dodonov.oogosu.config.security.UserRole).ADMIN)")
+    public ResponseEntity<Response<EmployeeDto>> changeLead(@RequestParam Long employeeId, @RequestParam Qualification leadQual) {
+        return ResponseBuilder.success(EmployeeMapper.INSTANCE.toDto(employeeService.changeLead(employeeId, leadQual)));
+    }
+
     @ApiOperation(value = "Удалить Работника")
     @DeleteMapping(value = "/{id}")
     @PreAuthorize("hasRole(T(com.dodonov.oogosu.config.security.UserRole).ADMIN)")

@@ -31,4 +31,6 @@ public interface EmployeeService {
     List<Employee> getAllFromMyDepartmentWithDeleted();
 
     Employee restore(Long employeeId);
+
+    Employee changeLead(Long employeeId, Qualification leadQual);
 }

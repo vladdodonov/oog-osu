@@ -55,7 +55,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
 
         if (UserRole.LEAD.equals(saveDto.getRole())) {
-            saveDto.setQualification(LEAD);
+            throw new RuntimeException("Смена начальника - отдельный эндпойнт");
         }
         if (UserRole.INSPECTOR.equals(saveDto.getRole())) {
             saveDto.setQualification(SENIOR);
@@ -213,5 +213,24 @@ public class EmployeeServiceImpl implements EmployeeService {
             return employeeRepository.findAllExecutorsWithDeleted();
         }
         return employeeRepository.findAllExecutorsByDepartmentIdWithDeleted(securityService.getCurrentDepartment().getId());
+    }
+
+    @Override
+    @Transactional
+    public Employee changeLead(Long employeeId, Qualification leadQual) {
+        var nextLead = employeeRepository.findById(employeeId)
+                .orElseThrow(EntityNotFoundException::new);
+        var currentLead = findLeadByDepartmentId(nextLead.getDepartment().getId());
+        var nextLeadPrincipal = principalRepository.findByUsername(nextLead.getUsername())
+                .orElseThrow(EntityNotFoundException::new);
+        var currentLeadPrincipal = principalRepository.findByUsername(currentLead.getUsername())
+                .orElseThrow(EntityNotFoundException::new);
+        currentLead.setQualification(leadQual);
+        nextLeadPrincipal.setRole(UserRole.LEAD);
+        currentLeadPrincipal.setRole(UserRole.EXECUTOR);
+        employeeRepository.save(currentLead);
+        principalRepository.save(currentLeadPrincipal);
+        principalRepository.save(nextLeadPrincipal);
+        return employeeRepository.save(nextLead);
     }
 }
