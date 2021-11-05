@@ -225,7 +225,11 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .orElseThrow(EntityNotFoundException::new);
         var currentLeadPrincipal = principalRepository.findByUsername(currentLead.getUsername())
                 .orElseThrow(EntityNotFoundException::new);
+        if (LEAD.equals(leadQual)){
+            throw new RuntimeException("Не надо пытаться выставить начальнику, которого заменяем, квалификацию начальника");
+        }
         currentLead.setQualification(leadQual);
+        nextLead.setQualification(LEAD);
         nextLeadPrincipal.setRole(UserRole.LEAD);
         currentLeadPrincipal.setRole(UserRole.EXECUTOR);
         employeeRepository.save(currentLead);
