@@ -63,7 +63,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 }
             }
         }
-        if (!leadIsPresent){
+        if (!leadIsPresent) {
             saveDto.setRole(UserRole.LEAD);
         }
         if (UserRole.INSPECTOR.equals(saveDto.getRole()) || UserRole.ADMIN.equals(saveDto.getRole())) {
@@ -162,7 +162,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Employee findLeadByDepartmentId(Long departmentId) {
-        return employeeRepository.findLeadByDepartmentId(departmentId).orElseThrow(EntityNotFoundException::new);
+        return employeeRepository.findLeadByDepartmentId(departmentId).orElse(null);
     }
 
     @Override
@@ -232,12 +232,14 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
         var nextLeadPrincipal = principalRepository.findByUsername(nextLead.getUsername())
                 .orElseThrow(EntityNotFoundException::new);
-        var currentLeadPrincipal = principalRepository.findByUsername(currentLead.getUsername())
-                .orElseThrow(EntityNotFoundException::new);
+        if (currentLead != null) {
+            var currentLeadPrincipal = principalRepository.findByUsername(currentLead.getUsername())
+                    .orElseThrow(EntityNotFoundException::new);
+            currentLeadPrincipal.setRole(UserRole.EXECUTOR);
+            principalRepository.save(currentLeadPrincipal);
+        }
         nextLeadPrincipal.setRole(UserRole.LEAD);
-        currentLeadPrincipal.setRole(UserRole.EXECUTOR);
         employeeRepository.save(currentLead);
-        principalRepository.save(currentLeadPrincipal);
         principalRepository.save(nextLeadPrincipal);
         return employeeRepository.save(nextLead);
     }
