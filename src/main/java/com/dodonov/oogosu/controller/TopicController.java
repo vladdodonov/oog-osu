@@ -39,9 +39,8 @@ public class TopicController {
     @ApiOperation(value = "Создать новую тему и добавить к департаменту")
     @PostMapping
     @PreAuthorize("hasRole(T(com.dodonov.oogosu.config.security.UserRole).ADMIN)")
-    public ResponseEntity<Response<TopicDto>> addTopicToDepartment(@RequestBody TopicDto dto, @PathVariable(value = "departmentId") final Long departmentId) {
+    public ResponseEntity<Response<TopicDto>> addTopicToDepartment(@RequestBody TopicDto dto) {
         var topic = TopicDtoMapper.INSTANCE.toEntity(dto);
-        topic.setDepartment(Department.builder().id(departmentId).build());
         return ResponseBuilder.success(TopicDtoMapper.INSTANCE.toDto(topicService.addTopicToDepartment(topic)));
     }
 
