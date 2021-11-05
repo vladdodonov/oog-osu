@@ -64,7 +64,9 @@ public class EmployeeServiceImpl implements EmployeeService {
             var lead = employeeRepository
                     .findByQualificationAndDepartment_id(LEAD, saveDto.getDepartment().getId());
             if (lead.isPresent()) {
-                throw new RuntimeException("Должен быть только один начальник. Сначала отредактируйте старого");
+                if (!lead.get().getId().equals(saveDto.getId())) {
+                    throw new RuntimeException("Должен быть только один начальник. Сначала отредактируйте старого");
+                }
             }
         }
         if (saveDto.getId() != null) {
