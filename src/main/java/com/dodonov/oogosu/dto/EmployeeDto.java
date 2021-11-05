@@ -1,5 +1,6 @@
 package com.dodonov.oogosu.dto;
 
+import com.dodonov.oogosu.config.security.UserRole;
 import com.dodonov.oogosu.domain.enums.Qualification;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -34,4 +35,6 @@ public class EmployeeDto {
     private Long appealsNumber;
     @ApiModelProperty(value = "Архивировано")
     private Boolean archived;
+    @ApiModelProperty(value = "Роль")
+    private UserRole role;
 }

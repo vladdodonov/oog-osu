@@ -2,6 +2,7 @@ package com.dodonov.oogosu.service.impl;
 
 import com.dodonov.oogosu.domain.dict.Department;
 import com.dodonov.oogosu.domain.dict.Topic;
+import com.dodonov.oogosu.dto.TopicDto;
 import com.dodonov.oogosu.repository.DepartmentRepository;
 import com.dodonov.oogosu.repository.TopicRepository;
 import com.dodonov.oogosu.service.TopicService;
@@ -65,6 +66,14 @@ public class TopicServiceImpl implements TopicService {
             throw new RuntimeException("Тема принадлежит к архивированному департаменту");
         }
         topic.setArchived(null);
+        return topicRepository.save(topic);
+    }
+
+    @Override
+    @Transactional
+    public Topic changeTopicName(TopicDto dto) {
+        var topic = topicRepository.findById(dto.getId()).orElseThrow(EntityNotFoundException::new);
+        topic.setName(dto.getName());
         return topicRepository.save(topic);
     }
 }

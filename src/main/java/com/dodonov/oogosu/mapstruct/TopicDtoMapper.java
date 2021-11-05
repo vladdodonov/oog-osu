@@ -7,7 +7,7 @@ import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
-@Mapper
+@Mapper(uses = {DepartmentMapper.class})
 public interface TopicDtoMapper {
     TopicDtoMapper INSTANCE = Mappers.getMapper(TopicDtoMapper.class);
     Topic toEntity(TopicDto topicDto);

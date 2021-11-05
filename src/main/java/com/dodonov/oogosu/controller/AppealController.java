@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 
 
@@ -61,8 +62,8 @@ public class AppealController {
     @ApiOperation(value = "Продлить срок обращения")
     @PostMapping(value = "/prolong")
     @PreAuthorize("hasAnyRole({T(com.dodonov.oogosu.config.security.UserRole).ADMIN, T(com.dodonov.oogosu.config.security.UserRole).LEAD})")
-    public ResponseEntity<Response<AppealDto>> prolong(@RequestBody AppealDto dto) {
-        return ResponseBuilder.success(AppealDtoMapper.INSTANCE.toDto(appealService.prolong(dto.getId(), dto.getDueDate())));
+    public ResponseEntity<Response<AppealDto>> prolong(@RequestParam Long id, @RequestParam LocalDateTime dueDate) {
+        return ResponseBuilder.success(AppealDtoMapper.INSTANCE.toDto(appealService.prolong(id, dueDate)));
     }
 
     @ApiOperation(value = "Подготовить ответ")

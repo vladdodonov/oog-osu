@@ -45,6 +45,13 @@ public class TopicController {
         return ResponseBuilder.success(TopicDtoMapper.INSTANCE.toDto(topicService.addTopicToDepartment(topic)));
     }
 
+    @ApiOperation(value = "Изменить название темы")
+    @PostMapping(value = "/change-name/{topicId}")
+    @PreAuthorize("hasRole(T(com.dodonov.oogosu.config.security.UserRole).ADMIN)")
+    public ResponseEntity<Response<TopicDto>> changeTopicName(@RequestBody TopicDto dto) {
+        return ResponseBuilder.success(TopicDtoMapper.INSTANCE.toDto(topicService.changeTopicName(dto)));
+    }
+
     @ApiOperation(value = "Получение тем по id департамента")
     @GetMapping(value = "/{departmentId}")
     public ResponseEntity<CollectionResponse<TopicDto>> getAllByDepartment(@PathVariable(value = "departmentId") final Long departmentId) {
