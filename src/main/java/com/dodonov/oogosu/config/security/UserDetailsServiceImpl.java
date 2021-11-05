@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static org.apache.commons.lang3.BooleanUtils.isTrue;
+
 @Service
 @Primary
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -36,6 +38,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         var user = principalRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Username: " + username + " not found"));
+        if (isTrue(user.getArchived())){
+            throw new RuntimeException("Этот пользователь архивирован, вход невозможен");
+        }
         List<GrantedAuthority> grantedAuthorities = AuthorityUtils
                 .commaSeparatedStringToAuthorityList("ROLE_" + user.getRole().name());
 

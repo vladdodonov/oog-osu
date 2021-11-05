@@ -20,4 +20,6 @@ public class Principal {
     @Column(name = "role")
     @Enumerated(value = EnumType.STRING)
     private UserRole role;
+    @Column(name = "archived")
+    private Boolean archived;
 }

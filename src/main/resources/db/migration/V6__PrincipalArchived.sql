@@ -1,0 +1,1 @@
+alter table principal add column archived bool;

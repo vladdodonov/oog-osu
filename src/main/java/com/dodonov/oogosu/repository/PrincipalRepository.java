@@ -4,6 +4,7 @@ package com.dodonov.oogosu.repository;
 import com.dodonov.oogosu.config.security.Principal;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -18,4 +19,7 @@ public interface PrincipalRepository extends JpaSpecificationExecutor<Principal>
             "where emp.id = :id " +
             "and coalesce(emp.archived, false) is false")
     Optional<Principal> findByEmployeeId(@Param("id") Long id);
+    @Modifying
+    @Query(value = "update principal set archived = true where id = :id", nativeQuery = true)
+    void archive(@Param("id") String username);
 }
