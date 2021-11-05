@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.dodonov.oogosu.domain.enums.State.IN_WORK;
+import static com.dodonov.oogosu.domain.enums.State.NEW;
 import static com.dodonov.oogosu.domain.enums.State.ON_REVIEW;
 
 @Service
@@ -116,6 +117,9 @@ public class AppealServiceImpl implements AppealService {
     @Transactional(rollbackFor = Exception.class)
     public Appeal prolong(Long id, LocalDateTime dueDate) {
         var fromDb = appealRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        if (NEW.equals(fromDb.getState())) {
+            throw new RuntimeException("Нельзя продлить срок обращения в статусе Новое");
+        }
         if (fromDb.getDueDate().toEpochSecond(ZoneOffset.UTC) > dueDate.toEpochSecond(ZoneOffset.UTC)) {
             throw new RuntimeException("Дата, на которую собираетесь продлить, раньше чем уже установленный срок");
         }
