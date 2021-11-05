@@ -54,20 +54,20 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new RuntimeException("Не представлен департамент");
         }
 
-        if (UserRole.LEAD.equals(saveDto.getRole())) {
-            throw new RuntimeException("Смена начальника - отдельный эндпойнт");
-        }
-        if (UserRole.INSPECTOR.equals(saveDto.getRole())) {
-            saveDto.setQualification(SENIOR);
-        }
-        if (LEAD.equals(saveDto.getQualification())) {
+        if (UserRole.LEAD.equals(saveDto.getRole()) || LEAD.equals(saveDto.getQualification())) {
             var lead = employeeRepository
                     .findByQualificationAndDepartment_id(LEAD, saveDto.getDepartment().getId());
             if (lead.isPresent()) {
-                if (!lead.get().getId().equals(saveDto.getId())) {
-                    throw new RuntimeException("Должен быть только один начальник. Сначала отредактируйте старого");
+                if (saveDto.getId() != null) {
+                    if (!lead.get().getId().equals(saveDto.getId())) {
+                        throw new RuntimeException("Должен быть только один начальник. Сначала отредактируйте старого");
+                    }
+                    throw new RuntimeException("Смена начальника - отдельный эндпойнт");
                 }
             }
+        }
+        if (UserRole.INSPECTOR.equals(saveDto.getRole()) || UserRole.ADMIN.equals(saveDto.getRole())) {
+            saveDto.setQualification(SENIOR);
         }
         if (saveDto.getId() != null) {
             var principalFromDb = principalRepository.findByEmployeeId(saveDto.getId())
@@ -202,7 +202,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional(readOnly = true)
     public List<Employee> getAllFromMyDepartment() {
-        if (securityService.hasRole(UserRole.ADMIN)){
+        if (securityService.hasRole(UserRole.ADMIN)) {
             return employeeRepository.findAllExecutors();
         }
         return employeeRepository.findAllExecutorsByDepartmentId(securityService.getCurrentDepartment().getId());
@@ -211,7 +211,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional(readOnly = true)
     public List<Employee> getAllFromMyDepartmentWithDeleted() {
-        if (securityService.hasRole(UserRole.ADMIN)){
+        if (securityService.hasRole(UserRole.ADMIN)) {
             return employeeRepository.findAllExecutorsWithDeleted();
         }
         return employeeRepository.findAllExecutorsByDepartmentIdWithDeleted(securityService.getCurrentDepartment().getId());
@@ -227,7 +227,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .orElseThrow(EntityNotFoundException::new);
         var currentLeadPrincipal = principalRepository.findByUsername(currentLead.getUsername())
                 .orElseThrow(EntityNotFoundException::new);
-        if (LEAD.equals(leadQual)){
+        if (LEAD.equals(leadQual)) {
             throw new RuntimeException("Не надо пытаться выставить начальнику, которого заменяем, квалификацию начальника");
         }
         currentLead.setQualification(leadQual);
