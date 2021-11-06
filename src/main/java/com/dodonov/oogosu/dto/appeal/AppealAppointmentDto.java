@@ -10,6 +10,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 @Builder
 @NoArgsConstructor
@@ -27,4 +29,7 @@ public class AppealAppointmentDto {
     private EmployeeDto executor;
     @ApiModelProperty(value = "Признак жалобы")
     private Boolean isComplaint;
+    public void setDueDate(ZonedDateTime dueDate) {
+        this.dueDate = dueDate.withZoneSameInstant(ZoneId.systemDefault()).toLocalDate().atStartOfDay();
+    }
 }

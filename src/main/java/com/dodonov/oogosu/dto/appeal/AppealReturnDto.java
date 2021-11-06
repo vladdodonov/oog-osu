@@ -1,6 +1,5 @@
 package com.dodonov.oogosu.dto.appeal;
 
-import com.dodonov.oogosu.domain.enums.Decision;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -9,6 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 @Builder
 @NoArgsConstructor
@@ -22,4 +23,7 @@ public class AppealReturnDto {
     private String returnReason;
     @ApiModelProperty(value = "Срок")
     private LocalDateTime dueDate;
+    public void setDueDate(ZonedDateTime dueDate) {
+        this.dueDate = dueDate.withZoneSameInstant(ZoneId.systemDefault()).toLocalDate().atStartOfDay();;
+    }
 }

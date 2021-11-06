@@ -14,6 +14,8 @@ import lombok.experimental.SuperBuilder;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 @Getter
 @Setter
@@ -62,8 +64,4 @@ public class Appeal extends BaseEntity {
     private Boolean isComplaint;
     @Column(name = "is_returned")
     private Boolean isReturned;
-
-    public void setDueDate(LocalDateTime dueDate) {
-        this.dueDate = dueDate.toLocalDate().atStartOfDay();
-    }
 }

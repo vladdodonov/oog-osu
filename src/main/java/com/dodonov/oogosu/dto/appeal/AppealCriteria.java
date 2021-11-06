@@ -10,6 +10,8 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -58,6 +60,30 @@ public class AppealCriteria {
     private Boolean isComplaint;
     @ApiModelProperty(value = "Признак возвращения")
     private Boolean isReturned;
+
+    public void setCreationDateFrom(ZonedDateTime creationDateFrom) {
+        this.creationDateFrom = creationDateFrom.withZoneSameInstant(ZoneId.systemDefault()).toLocalDate().atStartOfDay();
+    }
+
+    public void setCreationDateTo(ZonedDateTime creationDateTo) {
+        this.creationDateTo = creationDateTo.withZoneSameInstant(ZoneId.systemDefault()).toLocalDate().atStartOfDay();;
+    }
+
+    public void setDueDateFrom(ZonedDateTime dueDateFrom) {
+        this.dueDateFrom = dueDateFrom.withZoneSameInstant(ZoneId.systemDefault()).toLocalDate().atStartOfDay();;
+    }
+
+    public void setDueDateTo(ZonedDateTime dueDateTo) {
+        this.dueDateTo = dueDateTo.withZoneSameInstant(ZoneId.systemDefault()).toLocalDate().atStartOfDay();;
+    }
+
+    public void setAnswerDateFrom(ZonedDateTime answerDateFrom) {
+        this.answerDateFrom = answerDateFrom.withZoneSameInstant(ZoneId.systemDefault()).toLocalDate().atStartOfDay();;
+    }
+
+    public void setAnswerDateTo(ZonedDateTime answerDateTo) {
+        this.answerDateTo = answerDateTo.withZoneSameInstant(ZoneId.systemDefault()).toLocalDate().atStartOfDay();;
+    }
 
     @Builder.Default
     @ApiModelProperty(hidden = true)

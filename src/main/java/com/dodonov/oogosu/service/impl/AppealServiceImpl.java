@@ -119,8 +119,8 @@ public class AppealServiceImpl implements AppealService {
         if (NEW.equals(fromDb.getState())) {
             throw new RuntimeException("Нельзя продлить срок обращения в статусе Новое");
         }
-        if (fromDb.getDueDate().toEpochSecond(ZoneOffset.UTC) > dueDate.toEpochSecond(ZoneOffset.UTC)) {
-            throw new RuntimeException("Дата, на которую собираетесь продлить, раньше чем уже установленный срок");
+        if (fromDb.getDueDate().toEpochSecond(ZoneOffset.UTC) >= dueDate.toEpochSecond(ZoneOffset.UTC)) {
+            throw new RuntimeException("Дата, на которую собираетесь продлить, равна или раньше чем уже установленный срок");
         }
         fromDb.setDueDate(dueDate);
         fromDb.setIsProlonged(true);
