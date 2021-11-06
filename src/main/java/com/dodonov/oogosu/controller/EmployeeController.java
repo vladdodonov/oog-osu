@@ -108,7 +108,7 @@ public class EmployeeController {
     @GetMapping(value = "/qualifications")
     @PreAuthorize("hasAnyRole({T(com.dodonov.oogosu.config.security.UserRole).ADMIN, T(com.dodonov.oogosu.config.security.UserRole).LEAD, T(com.dodonov.oogosu.config.security.UserRole).INSPECTOR})")
     public ResponseEntity<CollectionResponse<Qualification>> getDecisions() {
-        return ResponseBuilder.success(Arrays.asList(Qualification.values()));
+        return ResponseBuilder.success(Arrays.stream(Qualification.values()).filter(a -> !Qualification.SPECIAL.equals(a)).collect(Collectors.toList()));
     }
 
 
