@@ -2,6 +2,7 @@ package com.dodonov.oogosu.controller;
 
 import com.dodonov.oogosu.config.security.UserRole;
 import com.dodonov.oogosu.domain.enums.Qualification;
+import com.dodonov.oogosu.dto.DepartmentDto;
 import com.dodonov.oogosu.dto.EmployeeDto;
 import com.dodonov.oogosu.dto.EmployeeSaveDto;
 import com.dodonov.oogosu.dto.appeal.AppealMatchingEmployeeDto;
@@ -18,6 +19,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 
@@ -33,7 +35,7 @@ public class EmployeeController {
     @PreAuthorize("hasAnyRole({T(com.dodonov.oogosu.config.security.UserRole).ADMIN, T(com.dodonov.oogosu.config.security.UserRole).INSPECTOR})")
     public ResponseEntity<CollectionResponse<EmployeeDto>> getAllByDepartment(@PathVariable(name = "departmentId") Long departmentId) {
         var employees = EmployeeMapper.INSTANCE.toDtos(employeeService.findAllByDepartmentId(departmentId));
-        return ResponseBuilder.success(employees);
+        return ResponseBuilder.success(employees.stream().sorted(Comparator.comparing(EmployeeDto::getId)).collect(Collectors.toList()));
     }
 
     @ApiOperation(value = "Получение всех работников по департаменту (с удаленными)")
@@ -41,7 +43,7 @@ public class EmployeeController {
     @PreAuthorize("hasAnyRole({T(com.dodonov.oogosu.config.security.UserRole).ADMIN, T(com.dodonov.oogosu.config.security.UserRole).INSPECTOR})")
     public ResponseEntity<CollectionResponse<EmployeeDto>> getAllByDepartmentWithDeleted(@PathVariable(name = "departmentId") Long departmentId) {
         var employees = EmployeeMapper.INSTANCE.toDtos(employeeService.findAllByDepartmentIdWithDeleted(departmentId));
-        return ResponseBuilder.success(employees);
+        return ResponseBuilder.success(employees.stream().sorted(Comparator.comparing(EmployeeDto::getId)).collect(Collectors.toList()));
     }
 
     @ApiOperation(value = "Найти подходящих исполнителей")
@@ -56,7 +58,7 @@ public class EmployeeController {
     @PreAuthorize("hasAnyRole({T(com.dodonov.oogosu.config.security.UserRole).ADMIN, T(com.dodonov.oogosu.config.security.UserRole).LEAD})")
     public ResponseEntity<CollectionResponse<EmployeeDto>> getAllFromMyDepartment() {
         var employees = EmployeeMapper.INSTANCE.toDtos(employeeService.getAllFromMyDepartment());
-        return ResponseBuilder.success(employees);
+        return ResponseBuilder.success(employees.stream().sorted(Comparator.comparing(EmployeeDto::getId)).collect(Collectors.toList()));
     }
 
     @ApiOperation(value = "Получение всех исполнителей по департаменту авторизованного начальника (с удаленными)")
@@ -64,7 +66,7 @@ public class EmployeeController {
     @PreAuthorize("hasAnyRole({T(com.dodonov.oogosu.config.security.UserRole).ADMIN, T(com.dodonov.oogosu.config.security.UserRole).LEAD, T(com.dodonov.oogosu.config.security.UserRole).INSPECTOR})")
     public ResponseEntity<CollectionResponse<EmployeeDto>> getAllFromMyDepartmentWithDeleted() {
         var employees = EmployeeMapper.INSTANCE.toDtos(employeeService.getAllFromMyDepartmentWithDeleted());
-        return ResponseBuilder.success(employees);
+        return ResponseBuilder.success(employees.stream().sorted(Comparator.comparing(EmployeeDto::getId)).collect(Collectors.toList()));
     }
 
     @ApiOperation(value = "Получить текущего сотрудника")

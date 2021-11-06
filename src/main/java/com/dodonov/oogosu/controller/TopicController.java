@@ -1,6 +1,7 @@
 package com.dodonov.oogosu.controller;
 
 import com.dodonov.oogosu.domain.dict.Department;
+import com.dodonov.oogosu.dto.EmployeeDto;
 import com.dodonov.oogosu.dto.TopicAddDto;
 import com.dodonov.oogosu.dto.TopicDto;
 import com.dodonov.oogosu.mapstruct.TopicDtoMapper;
@@ -15,6 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
+import java.util.stream.Collectors;
+
 
 @Api(tags = "topic", description = "Работа с темами обращений")
 @RestController
@@ -27,14 +31,14 @@ public class TopicController {
     @GetMapping(value = "/find-all")
     public ResponseEntity<CollectionResponse<TopicDto>> getAllTopics() {
         var topics = TopicDtoMapper.INSTANCE.toDtos(topicService.findAll());
-        return ResponseBuilder.success(topics);
+        return ResponseBuilder.success(topics.stream().sorted(Comparator.comparing(TopicDto::getId)).collect(Collectors.toList()));
     }
 
     @ApiOperation(value = "Получение тем обращения")
     @GetMapping(value = "/find-all-with-deleted")
     public ResponseEntity<CollectionResponse<TopicDto>> getAllTopicsWithDeleted() {
         var topics = TopicDtoMapper.INSTANCE.toDtos(topicService.findAllWithDeleted());
-        return ResponseBuilder.success(topics);
+        return ResponseBuilder.success(topics.stream().sorted(Comparator.comparing(TopicDto::getId)).collect(Collectors.toList()));
     }
 
     @ApiOperation(value = "Создать новую тему и добавить к департаменту")
@@ -54,7 +58,10 @@ public class TopicController {
     @ApiOperation(value = "Получение тем по id департамента")
     @GetMapping(value = "/{departmentId}")
     public ResponseEntity<CollectionResponse<TopicDto>> getAllByDepartment(@PathVariable(value = "departmentId") final Long departmentId) {
-        return ResponseBuilder.success(TopicDtoMapper.INSTANCE.toDtos(topicService.findAllByDepartment(Department.builder().id(departmentId).build())));
+        return ResponseBuilder.success(TopicDtoMapper.INSTANCE.toDtos(topicService.findAllByDepartment(Department.builder().id(departmentId).build()))
+                .stream()
+                .sorted(Comparator.comparing(TopicDto::getId))
+                .collect(Collectors.toList()));
     }
 
     @ApiOperation(value = "Удалить тему")

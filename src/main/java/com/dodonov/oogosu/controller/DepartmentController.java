@@ -16,6 +16,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
+import java.util.stream.Collectors;
+
 
 @Api(tags = "department", description = "Работа с департаментами")
 @RestController
@@ -29,16 +32,16 @@ public class DepartmentController {
     @GetMapping(value = "/find-all")
     @PreAuthorize("hasAnyRole({T(com.dodonov.oogosu.config.security.UserRole).ADMIN, T(com.dodonov.oogosu.config.security.UserRole).INSPECTOR})")
     public ResponseEntity<CollectionResponse<DepartmentDto>> getAllDepartments() {
-        var topics = DepartmentMapper.INSTANCE.toDtos(departmentService.findAll());
-        return ResponseBuilder.success(topics);
+        var departmentDtos = DepartmentMapper.INSTANCE.toDtos(departmentService.findAll());
+        return ResponseBuilder.success(departmentDtos.stream().sorted(Comparator.comparing(DepartmentDto::getId)).collect(Collectors.toList()));
     }
 
     @ApiOperation(value = "Получение всех департаментов (с удаленными)")
     @GetMapping(value = "/find-all-with-deleted")
     @PreAuthorize("hasAnyRole({T(com.dodonov.oogosu.config.security.UserRole).ADMIN, T(com.dodonov.oogosu.config.security.UserRole).INSPECTOR})")
     public ResponseEntity<CollectionResponse<DepartmentDto>> getAllDepartmentsWithDeleted() {
-        var topics = DepartmentMapper.INSTANCE.toDtos(departmentService.findAllWithDeleted());
-        return ResponseBuilder.success(topics);
+        var departmentDtos = DepartmentMapper.INSTANCE.toDtos(departmentService.findAllWithDeleted());
+        return ResponseBuilder.success(departmentDtos.stream().sorted(Comparator.comparing(DepartmentDto::getId)).collect(Collectors.toList()));
     }
 
     @ApiOperation(value = "Получить начальника департамента")

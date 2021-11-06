@@ -16,7 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 
 @Service
@@ -87,6 +89,9 @@ public class ReportServiceImpl implements ReportService {
         setCriteria(dto);
         setAverageCriteria(dto);
         setColorOnAverage(dto);
+        dto.setDepartmentDataList(dto.getDepartmentDataList().stream()
+                .sorted(Comparator.comparing(DepartmentData::getId))
+                .collect(Collectors.toList()));
         return dto;
     }
 
