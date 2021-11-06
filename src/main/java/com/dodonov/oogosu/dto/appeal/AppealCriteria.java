@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
@@ -66,7 +67,7 @@ public class AppealCriteria {
     }
 
     public void setCreationDateTo(ZonedDateTime creationDateTo) {
-        this.creationDateTo = creationDateTo.withZoneSameInstant(ZoneId.systemDefault()).toLocalDate().atStartOfDay();;
+        this.creationDateTo = creationDateTo.withZoneSameInstant(ZoneId.systemDefault()).toLocalDate().atTime(LocalTime.MAX);
     }
 
     public void setDueDateFrom(ZonedDateTime dueDateFrom) {
@@ -74,7 +75,7 @@ public class AppealCriteria {
     }
 
     public void setDueDateTo(ZonedDateTime dueDateTo) {
-        this.dueDateTo = dueDateTo.withZoneSameInstant(ZoneId.systemDefault()).toLocalDate().atStartOfDay();;
+        this.dueDateTo = dueDateTo.withZoneSameInstant(ZoneId.systemDefault()).toLocalDate().atTime(LocalTime.MAX);
     }
 
     public void setAnswerDateFrom(ZonedDateTime answerDateFrom) {
@@ -82,7 +83,7 @@ public class AppealCriteria {
     }
 
     public void setAnswerDateTo(ZonedDateTime answerDateTo) {
-        this.answerDateTo = answerDateTo.withZoneSameInstant(ZoneId.systemDefault()).toLocalDate().atStartOfDay();;
+        this.answerDateTo = answerDateTo.withZoneSameInstant(ZoneId.systemDefault()).toLocalDate().atTime(LocalTime.MAX);
     }
 
     @Builder.Default
