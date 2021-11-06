@@ -14,6 +14,8 @@ public interface TopicService {
 
     List<Topic> findAllByDepartment(Department department);
 
+    List<Topic> findAllByDepartmentIdWithDeleted(Long id);
+
     Topic addTopicToDepartment(TopicAddDto topic);
 
     void deleteById(Long topicId);

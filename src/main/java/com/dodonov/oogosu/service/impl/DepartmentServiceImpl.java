@@ -2,12 +2,10 @@ package com.dodonov.oogosu.service.impl;
 
 import com.dodonov.oogosu.domain.dict.Department;
 import com.dodonov.oogosu.repository.DepartmentRepository;
-import com.dodonov.oogosu.repository.EmployeeRepository;
 import com.dodonov.oogosu.repository.TopicRepository;
 import com.dodonov.oogosu.service.DepartmentService;
 import com.dodonov.oogosu.service.EmployeeService;
 import com.dodonov.oogosu.service.TopicService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,7 +70,18 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Transactional(rollbackFor = Exception.class)
     public Department restore(Long departmentId) {
         var dep = departmentRepository.findById(departmentId).orElseThrow(EntityNotFoundException::new);
+        var emps = employeeService.findAllByDepartmentIdWithDeleted(departmentId)
+                .stream()
+                .filter(a -> isTrue(a.getArchived()))
+                .collect(toSet());
+        var topics = topicService.findAllByDepartmentIdWithDeleted(departmentId)
+                .stream()
+                .filter(a -> isTrue(a.getArchived()))
+                .collect(toSet());
         dep.setArchived(null);
-        return departmentRepository.save(dep);
+        var saved = departmentRepository.saveAndFlush(dep);
+        emps.forEach(e -> employeeService.restore(e.getId()));
+        topics.forEach(t -> topicService.restore(t.getId()));
+        return saved;
     }
 }

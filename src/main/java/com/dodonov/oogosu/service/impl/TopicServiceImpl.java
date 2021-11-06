@@ -43,6 +43,11 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
+    public List<Topic> findAllByDepartmentIdWithDeleted(Long id) {
+        return topicRepository.findAllByDepartment(Department.builder().id(id).build());
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public Topic addTopicToDepartment(TopicAddDto dto) {
         var dep = departmentRepository.findById(dto.getDepartmentId())
