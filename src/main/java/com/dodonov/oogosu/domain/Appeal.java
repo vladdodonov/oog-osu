@@ -64,4 +64,16 @@ public class Appeal extends BaseEntity {
     private Boolean isComplaint;
     @Column(name = "is_returned")
     private Boolean isReturned;
+
+    public void setCreationDate(LocalDateTime creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public void setDueDate(LocalDateTime dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public void setAnswerDate(LocalDateTime answerDate) {
+        this.answerDate = answerDate;
+    }
 }

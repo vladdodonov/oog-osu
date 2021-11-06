@@ -4,7 +4,6 @@ import com.dodonov.oogosu.config.security.UserRole;
 import com.dodonov.oogosu.domain.Appeal;
 import com.dodonov.oogosu.domain.Citizen;
 import com.dodonov.oogosu.domain.dict.Employee;
-import com.dodonov.oogosu.domain.enums.Qualification;
 import com.dodonov.oogosu.domain.enums.State;
 import com.dodonov.oogosu.dto.appeal.*;
 import com.dodonov.oogosu.repository.AppealRepository;
@@ -67,14 +66,14 @@ public class AppealServiceImpl implements AppealService {
     @Transactional(readOnly = true)
     public Appeal findById(Long id) {
         var appeal = appealRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        if (securityService.getCurrentDepartment().equals(appeal.getDepartment())){
-            if (securityService.hasRole(UserRole.EXECUTOR)){
-                if (!securityService.getCurrentEmployee().equals(appeal.getExecutor())){
+        if (securityService.getCurrentDepartment().equals(appeal.getDepartment())) {
+            if (securityService.hasRole(UserRole.EXECUTOR)) {
+                if (!securityService.getCurrentEmployee().equals(appeal.getExecutor())) {
                     throw new RuntimeException("Вы не имеете право смотреть это обращение");
                 }
             }
         } else {
-            if (!securityService.hasRole(UserRole.ADMIN) || !securityService.hasRole(UserRole.INSPECTOR)){
+            if (!securityService.hasRole(UserRole.ADMIN) || !securityService.hasRole(UserRole.INSPECTOR)) {
                 throw new RuntimeException("Вы не имеете право смотреть это обращение");
             }
         }
@@ -87,7 +86,7 @@ public class AppealServiceImpl implements AppealService {
         var topic = topicRepository.findById(appeal.getTopic().getId()).orElseThrow(EntityNotFoundException::new);
         appeal = Appeal.builder()
                 .state(State.NEW)
-                .creationDate(LocalDateTime.now())
+                .creationDate(LocalDateTime.now().toLocalDate().atStartOfDay())
                 .citizen(citizenRepository.save(appeal.getCitizen()))
                 .topic(topic)
                 .department(topic.getDepartment())
@@ -156,7 +155,7 @@ public class AppealServiceImpl implements AppealService {
         }
         appeal.setAnswer(appealDto.getAnswer());
         appeal.setState(State.ON_REVIEW);
-        appeal.setAnswerDate(LocalDateTime.now());
+        appeal.setAnswerDate(LocalDateTime.now().toLocalDate().atStartOfDay());
         if (appealDto.getDecision() == null) {
             throw new RuntimeException("Необходимо указать решение");
         }
@@ -203,7 +202,7 @@ public class AppealServiceImpl implements AppealService {
                 getEmployeeRequiusites(employeeRepository.findLeadByDepartmentId(appeal.getDepartment().getId()), appeal.getDepartment().getName()));
         appeal.setAnswer(messageText);
         appeal.setState(State.SENT);
-        appeal.setAnswerDate(LocalDateTime.now());
+        appeal.setAnswerDate(LocalDateTime.now().toLocalDate().atStartOfDay());
 
         var message = javaMailSender.createMimeMessage();
         var helper = new MimeMessageHelper(message, true);

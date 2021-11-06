@@ -177,7 +177,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional(readOnly = true)
     public List<Employee> findEmployeesMatching(AppealMatchingEmployeeDto dto) {
-        var isUrgent = LocalDateTime.now().until(dto.getDueDate(), DAYS) <= 10;
+        var isUrgent = LocalDateTime.now().toLocalDate().atStartOfDay().until(dto.getDueDate(), DAYS) <= 10;
         var difficulty = dto.getDifficulty();
         Set<Qualification> qualifications = new HashSet<>();
         if (isUrgent && HARD.equals(difficulty)) {
