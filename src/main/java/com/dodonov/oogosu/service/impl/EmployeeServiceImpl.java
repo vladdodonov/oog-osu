@@ -11,6 +11,7 @@ import com.dodonov.oogosu.mapstruct.EmployeeMapper;
 import com.dodonov.oogosu.repository.AppealRepository;
 import com.dodonov.oogosu.repository.EmployeeRepository;
 import com.dodonov.oogosu.repository.PrincipalRepository;
+import com.dodonov.oogosu.service.DepartmentService;
 import com.dodonov.oogosu.service.EmployeeService;
 import com.dodonov.oogosu.service.SecurityService;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +44,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final AppealRepository appealRepository;
     private final SecurityService securityService;
     private final PrincipalRepository principalRepository;
+    private final DepartmentService departmentService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -52,6 +54,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
         if (saveDto.getDepartment() == null || saveDto.getDepartment().getId() == null) {
             throw new RuntimeException("Не представлен департамент");
+        }
+
+        var dep = departmentService.findById(saveDto.getDepartment().getId());
+        if (isTrue(dep.getArchived())) {
+            throw new RuntimeException("Нельзя добавить сотрудника в удаленный департамент");
         }
 
         var leadOpt = employeeRepository
