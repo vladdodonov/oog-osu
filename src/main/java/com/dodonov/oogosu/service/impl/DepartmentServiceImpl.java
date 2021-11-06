@@ -70,7 +70,7 @@ public class DepartmentServiceImpl implements DepartmentService {
                 .filter(a -> isTrue(a.getArchived()))
                 .collect(toSet());
         dep.setArchived(null);
-        var saved = departmentRepository.save(dep);
+        var saved = departmentRepository.saveAndFlush(dep);
         emps.forEach(e -> employeeService.restore(e.getId()));
         topics.forEach(t -> topicService.restore(t.getId()));
         return saved;
