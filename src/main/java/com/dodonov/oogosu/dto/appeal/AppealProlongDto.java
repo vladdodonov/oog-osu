@@ -24,6 +24,8 @@ public class AppealProlongDto {
     private LocalDateTime dueDate;
 
     public void setDueDate(ZonedDateTime dueDate) {
-        this.dueDate = dueDate.withZoneSameInstant(ZoneId.systemDefault()).toLocalDate().atStartOfDay();;
+        System.out.println(dueDate);
+        this.dueDate = dueDate.withZoneSameInstant(ZoneId.systemDefault()).toLocalDate().atStartOfDay();
+        System.out.println(this.dueDate);
     }
 }
