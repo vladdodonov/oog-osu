@@ -45,7 +45,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final PrincipalRepository principalRepository;
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public Employee save(EmployeeSaveDto saveDto) {
         if (employeeRepository.existsByUsername(saveDto.getUsername())) {
             throw new RuntimeException("Уже есть с таким логином");
@@ -120,7 +120,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void deleteById(Long id) {
         var principalFromDb = principalRepository.findByEmployeeId(id)
                 .orElseThrow(EntityNotFoundException::new);
@@ -129,7 +129,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public Employee restore(Long id) {
         var emp = employeeRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         if (isTrue(emp.getDepartment().getArchived())) {
@@ -162,6 +162,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Employee findLeadByDepartmentId(Long departmentId) {
         return employeeRepository.findLeadByDepartmentId(departmentId).orElse(null);
     }
@@ -223,7 +224,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public Employee changeLead(Long employeeId) {
         var nextLead = employeeRepository.findById(employeeId)
                 .orElseThrow(EntityNotFoundException::new);

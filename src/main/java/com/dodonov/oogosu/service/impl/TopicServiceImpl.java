@@ -43,7 +43,7 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public Topic addTopicToDepartment(TopicAddDto dto) {
         var dep = departmentRepository.findById(dto.getDepartmentId())
                 .orElseThrow(EntityNotFoundException::new);
@@ -57,13 +57,13 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void deleteById(Long topicId) {
         topicRepository.archive(topicId);
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public Topic restore(Long topicId) {
         var topic = topicRepository.findById(topicId).orElseThrow(EntityNotFoundException::new);
         if (isTrue(topic.getDepartment().getArchived())){
@@ -74,7 +74,7 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public Topic changeTopicName(TopicDto dto) {
         var topic = topicRepository.findById(dto.getId()).orElseThrow(EntityNotFoundException::new);
         topic.setName(dto.getName());

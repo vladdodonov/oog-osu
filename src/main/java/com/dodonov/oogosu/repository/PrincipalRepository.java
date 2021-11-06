@@ -20,6 +20,6 @@ public interface PrincipalRepository extends JpaSpecificationExecutor<Principal>
             "and coalesce(emp.archived, false) is false")
     Optional<Principal> findByEmployeeId(@Param("id") Long id);
     @Modifying
-    @Query(value = "update principal set archived = true where id = :id", nativeQuery = true)
+    @Query(value = "update principal set archived = true where username = :id", nativeQuery = true)
     void archive(@Param("id") String username);
 }

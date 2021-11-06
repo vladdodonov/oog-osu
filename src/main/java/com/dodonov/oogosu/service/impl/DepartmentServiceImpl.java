@@ -49,7 +49,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void deleteById(Long departmentId) {
         employeeService.findAllByDepartmentId(departmentId)
                 .forEach(employee -> employeeService.deleteById(employee.getId()));
@@ -58,7 +58,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public Department restore(Long departmentId) {
         var dep = departmentRepository.findById(departmentId).orElseThrow(EntityNotFoundException::new);
         var emps = employeeService.findAllByDepartmentIdWithDeleted(departmentId)
