@@ -72,18 +72,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Transactional(rollbackFor = Exception.class)
     public Department restore(Long departmentId) {
         var dep = departmentRepository.findById(departmentId).orElseThrow(EntityNotFoundException::new);
-        var emps = employeeService.findAllByDepartmentIdWithDeleted(departmentId)
-                .stream()
-                .filter(a -> isTrue(a.getArchived()))
-                .collect(toSet());
-        var topics = topicService.findAllWithDeleted()
-                .stream()
-                .filter(a -> isTrue(a.getArchived()))
-                .collect(toSet());
         dep.setArchived(null);
-        var saved = departmentRepository.saveAndFlush(dep);
-        emps.forEach(e -> employeeService.restore(e.getId()));
-        topics.forEach(t -> topicService.restore(t.getId()));
-        return saved;
+        return departmentRepository.save(dep);
     }
 }

@@ -6,6 +6,7 @@ import com.dodonov.oogosu.mapstruct.DepartmentMapper;
 import com.dodonov.oogosu.mapstruct.EmployeeMapper;
 import com.dodonov.oogosu.service.DepartmentService;
 import com.dodonov.oogosu.service.EmployeeService;
+import com.dodonov.oogosu.service.TopicService;
 import com.dodonov.oogosu.utils.http.CollectionResponse;
 import com.dodonov.oogosu.utils.http.Response;
 import com.dodonov.oogosu.utils.http.ResponseBuilder;
@@ -16,6 +17,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import static java.util.stream.Collectors.toSet;
+import static org.apache.commons.lang3.BooleanUtils.isTrue;
+
 
 @Api(tags = "department", description = "Работа с департаментами")
 @RestController
@@ -24,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 public class DepartmentController {
     private final DepartmentService departmentService;
     private final EmployeeService employeeService;
+    private final TopicService topicService;
 
     @ApiOperation(value = "Получение всех департаментов")
     @GetMapping(value = "/find-all")
@@ -68,6 +73,17 @@ public class DepartmentController {
     @PostMapping(value = "/restore/{departmentId}")
     @PreAuthorize("hasRole(T(com.dodonov.oogosu.config.security.UserRole).ADMIN)")
     public ResponseEntity restoreDepartment(@PathVariable(value = "departmentId") final Long departmentId) {
-        return ResponseBuilder.success(DepartmentMapper.INSTANCE.toDto(departmentService.restore(departmentId)));
+        var dep = departmentService.restore(departmentId);
+        var emps = employeeService.findAllByDepartmentIdWithDeleted(departmentId)
+                .stream()
+                .filter(a -> isTrue(a.getArchived()))
+                .collect(toSet());
+        var topics = topicService.findAllWithDeleted()
+                .stream()
+                .filter(a -> isTrue(a.getArchived()))
+                .collect(toSet());
+        emps.forEach(e -> employeeService.restore(e.getId()));
+        topics.forEach(t -> topicService.restore(t.getId()));
+        return ResponseBuilder.success(DepartmentMapper.INSTANCE.toDto(dep));
     }
 }
