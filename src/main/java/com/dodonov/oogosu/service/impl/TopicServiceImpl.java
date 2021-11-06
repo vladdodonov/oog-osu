@@ -2,6 +2,7 @@ package com.dodonov.oogosu.service.impl;
 
 import com.dodonov.oogosu.domain.dict.Department;
 import com.dodonov.oogosu.domain.dict.Topic;
+import com.dodonov.oogosu.dto.TopicAddDto;
 import com.dodonov.oogosu.dto.TopicDto;
 import com.dodonov.oogosu.repository.DepartmentRepository;
 import com.dodonov.oogosu.repository.TopicRepository;
@@ -43,12 +44,15 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     @Transactional
-    public Topic addTopicToDepartment(Topic topic) {
-        var dep = departmentRepository.findById(topic.getDepartment().getId())
+    public Topic addTopicToDepartment(TopicAddDto dto) {
+        var dep = departmentRepository.findById(dto.getDepartmentId())
                 .orElseThrow(EntityNotFoundException::new);
         if (isTrue(dep.getArchived())){
             throw new RuntimeException("Пытаетесь добавить тему к удаленному департаменту");
         }
+        var topic = new Topic();
+        topic.setName(dto.getName());
+        topic.setDepartment(dep);
         return topicRepository.save(topic);
     }
 

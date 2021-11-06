@@ -1,6 +1,7 @@
 package com.dodonov.oogosu.controller;
 
 import com.dodonov.oogosu.domain.dict.Department;
+import com.dodonov.oogosu.dto.TopicAddDto;
 import com.dodonov.oogosu.dto.TopicDto;
 import com.dodonov.oogosu.mapstruct.TopicDtoMapper;
 import com.dodonov.oogosu.service.TopicService;
@@ -39,9 +40,8 @@ public class TopicController {
     @ApiOperation(value = "Создать новую тему и добавить к департаменту")
     @PostMapping
     @PreAuthorize("hasRole(T(com.dodonov.oogosu.config.security.UserRole).ADMIN)")
-    public ResponseEntity<Response<TopicDto>> addTopicToDepartment(@RequestBody TopicDto dto) {
-        var topic = TopicDtoMapper.INSTANCE.toEntity(dto);
-        return ResponseBuilder.success(TopicDtoMapper.INSTANCE.toDto(topicService.addTopicToDepartment(topic)));
+    public ResponseEntity<Response<TopicDto>> addTopicToDepartment(@RequestBody TopicAddDto dto) {
+        return ResponseBuilder.success(TopicDtoMapper.INSTANCE.toDto(topicService.addTopicToDepartment(dto)));
     }
 
     @ApiOperation(value = "Изменить название темы")

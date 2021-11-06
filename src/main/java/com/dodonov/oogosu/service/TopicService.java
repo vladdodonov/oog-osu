@@ -2,6 +2,7 @@ package com.dodonov.oogosu.service;
 
 import com.dodonov.oogosu.domain.dict.Department;
 import com.dodonov.oogosu.domain.dict.Topic;
+import com.dodonov.oogosu.dto.TopicAddDto;
 import com.dodonov.oogosu.dto.TopicDto;
 
 import java.util.List;
@@ -13,7 +14,7 @@ public interface TopicService {
 
     List<Topic> findAllByDepartment(Department department);
 
-    Topic addTopicToDepartment(Topic topic);
+    Topic addTopicToDepartment(TopicAddDto topic);
 
     void deleteById(Long topicId);
 
