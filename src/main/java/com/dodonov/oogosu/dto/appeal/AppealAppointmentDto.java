@@ -30,6 +30,8 @@ public class AppealAppointmentDto {
     @ApiModelProperty(value = "Признак жалобы")
     private Boolean isComplaint;
     public void setDueDate(ZonedDateTime dueDate) {
+        System.out.println(dueDate);
         this.dueDate = dueDate.withZoneSameInstant(ZoneId.systemDefault()).toLocalDate().atStartOfDay();
+        System.out.println(this.dueDate);
     }
 }
