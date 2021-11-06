@@ -30,6 +30,7 @@ import static com.dodonov.oogosu.domain.enums.Difficulty.MEDIUM;
 import static com.dodonov.oogosu.domain.enums.Qualification.JUNIOR;
 import static com.dodonov.oogosu.domain.enums.Qualification.MIDDLE;
 import static com.dodonov.oogosu.domain.enums.Qualification.SENIOR;
+import static com.dodonov.oogosu.domain.enums.Qualification.SPECIAL;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.BooleanUtils.isTrue;
@@ -67,7 +68,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             saveDto.setRole(UserRole.LEAD);
         }
         if (UserRole.INSPECTOR.equals(saveDto.getRole()) || UserRole.ADMIN.equals(saveDto.getRole())) {
-            saveDto.setQualification(SENIOR);
+            saveDto.setQualification(SPECIAL);
         }
         if (saveDto.getId() != null) {
             var principalFromDb = principalRepository.findByEmployeeId(saveDto.getId())
