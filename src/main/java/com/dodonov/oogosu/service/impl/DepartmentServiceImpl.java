@@ -8,6 +8,7 @@ import com.dodonov.oogosu.service.DepartmentService;
 import com.dodonov.oogosu.service.EmployeeService;
 import com.dodonov.oogosu.service.TopicService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,12 +20,22 @@ import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.BooleanUtils.isTrue;
 
 @Service
-@RequiredArgsConstructor
 public class DepartmentServiceImpl implements DepartmentService {
     private final DepartmentRepository departmentRepository;
     private final EmployeeService employeeService;
     private final TopicRepository topicRepository;
     private final TopicService topicService;
+
+    public DepartmentServiceImpl(DepartmentRepository departmentRepository,
+                                 @Lazy EmployeeService employeeService,
+                                 TopicRepository topicRepository,
+                                 TopicService topicService) {
+        this.departmentRepository = departmentRepository;
+        this.employeeService = employeeService;
+        this.topicRepository = topicRepository;
+        this.topicService = topicService;
+    }
+
     @Override
     @Transactional(readOnly = true)
     public List<Department> findAll() {
