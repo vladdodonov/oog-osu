@@ -60,6 +60,9 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void deleteById(Long departmentId) {
+        if (3L == departmentId){
+            throw new RuntimeException("Нельзя удалить департамент администратора");
+        }
         employeeService.findAllByDepartmentId(departmentId)
                 .forEach(employee -> employeeService.deleteById(employee.getId()));
         topicRepository.archiveByDepartment(departmentId);
