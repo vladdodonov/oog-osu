@@ -131,6 +131,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     public void deleteById(Long id) {
         var principalFromDb = principalRepository.findByEmployeeId(id)
                 .orElseThrow(EntityNotFoundException::new);
+        if ("admin".equals(principalFromDb.getUsername())) {
+            throw new RuntimeException("Нельзя удалить админа");
+        }
         principalRepository.archive(principalFromDb.getUsername());
         employeeRepository.archive(id);
     }
