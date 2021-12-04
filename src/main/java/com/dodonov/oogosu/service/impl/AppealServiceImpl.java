@@ -50,7 +50,7 @@ public class AppealServiceImpl implements AppealService {
                              TopicRepository topicRepository,
                              EmployeeRepository employeeRepository,
                              @Value("${emailservice.smtp.user-name}")
-                                     String emailFrom,
+                             String emailFrom,
                              JavaMailSender javaMailSender,
                              SecurityService securityService) {
         this.appealRepository = appealRepository;

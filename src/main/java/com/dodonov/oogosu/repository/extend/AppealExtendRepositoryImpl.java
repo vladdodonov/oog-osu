@@ -173,7 +173,7 @@ public class AppealExtendRepositoryImpl implements AppealExtendRepository {
         if (isNotEmpty(criteria.getDepartmentIds()) && securityService.hasAnyRole(ADMIN_INSPECTOR_ROLES)) {
             predicateList.add(cb.in(root.get("department")).value(criteria.getDepartmentIds().stream().map(id -> Department.builder().id(id).build()).collect(toSet())));
 
-        } else if (!securityService.hasRole(ADMIN)) {
+        } else if (!securityService.hasAnyRole(ADMIN_INSPECTOR_ROLES)) {
             predicateList.add(cb.equal(root.get("department"), securityService.getCurrentEmployee().getDepartment()));
         }
 

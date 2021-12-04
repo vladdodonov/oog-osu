@@ -55,7 +55,7 @@ public class EmployeeController {
 
     @ApiOperation(value = "Получение всех исполнителей по департаменту авторизованного начальника")
     @GetMapping
-    @PreAuthorize("hasAnyRole({T(com.dodonov.oogosu.config.security.UserRole).ADMIN, T(com.dodonov.oogosu.config.security.UserRole).LEAD})")
+    @PreAuthorize("hasAnyRole({T(com.dodonov.oogosu.config.security.UserRole).ADMIN, T(com.dodonov.oogosu.config.security.UserRole).LEAD, T(com.dodonov.oogosu.config.security.UserRole).INSPECTOR})")
     public ResponseEntity<CollectionResponse<EmployeeDto>> getAllFromMyDepartment() {
         var employees = EmployeeMapper.INSTANCE.toDtos(employeeService.getAllFromMyDepartment());
         return ResponseBuilder.success(employees.stream().sorted(Comparator.comparing(EmployeeDto::getId)).collect(Collectors.toList()));

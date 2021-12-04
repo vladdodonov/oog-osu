@@ -20,10 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static com.dodonov.oogosu.domain.dict.Employee.COMPARATOR_EMPLOYEE_APPEALS_NUMBER;
 import static com.dodonov.oogosu.domain.enums.Difficulty.HARD;
@@ -220,6 +217,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     public List<Employee> getAllFromMyDepartment() {
         if (securityService.hasRole(UserRole.ADMIN)) {
             return employeeRepository.findAllExecutors();
+        }
+        if (securityService.hasRole(UserRole.INSPECTOR)) {
+            return Collections.emptyList();
         }
         return employeeRepository.findAllExecutorsByDepartmentId(securityService.getCurrentDepartment().getId());
     }
