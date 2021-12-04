@@ -192,7 +192,7 @@ public class AppealExtendRepositoryImpl implements AppealExtendRepository {
         }
 
         if (isNotEmpty(criteria.getExecutorIds())) {
-            predicateList.add(cb.in(root.get("executor")).value(criteria.getExecutorIds().stream().map(id -> Employee.builder().id(id)).collect(toSet())));
+            predicateList.add(cb.in(root.get("executor")).value(criteria.getExecutorIds().stream().map(id -> Employee.builder().id(id).build()).collect(toSet())));
         }
 
         if (criteria.getIsProlonged() != null) {
