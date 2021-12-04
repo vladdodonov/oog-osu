@@ -20,4 +20,6 @@ public class AppealMatchingEmployeeDto {
     private LocalDateTime dueDate;
     @ApiModelProperty(value = "Сложность")
     private Difficulty difficulty;
+    @ApiModelProperty(value = "ID департамента темы")
+    private Long departmentId;
 }

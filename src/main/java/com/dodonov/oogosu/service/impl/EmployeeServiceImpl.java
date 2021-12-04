@@ -179,7 +179,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     public List<Employee> findEmployeesMatching(AppealMatchingEmployeeDto dto) {
         var isUrgent = LocalDateTime.now().toLocalDate().atStartOfDay().until(dto.getDueDate(), DAYS) <= 10;
         var difficulty = dto.getDifficulty();
-        Set<Qualification> qualifications = new HashSet<>();
+        var qualifications = new HashSet<Qualification>();
         if (isUrgent && HARD.equals(difficulty)) {
             qualifications.add(SENIOR);
         } else if (isUrgent && MEDIUM.equals(difficulty) || !isUrgent && HARD.equals(difficulty)) {
@@ -189,7 +189,10 @@ public class EmployeeServiceImpl implements EmployeeService {
             qualifications.add(MIDDLE);
             qualifications.add(JUNIOR);
         }
-        var emps = findAllByDepartmentIdAndQualifications(securityService.getCurrentDepartment().getId(), qualifications);
+        var currentDepartment = securityService.hasRole(UserRole.ADMIN)
+                ? departmentService.findById(dto.getDepartmentId())
+                : securityService.getCurrentDepartment();
+        var emps = findAllByDepartmentIdAndQualifications(currentDepartment.getId(), qualifications);
 
         return emps.entrySet().stream()
                 .filter(e -> {

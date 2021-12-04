@@ -132,7 +132,7 @@ public class AppealServiceImpl implements AppealService {
         var emp = employeeRepository.findById(dto.getExecutor().getId()).orElseThrow(EntityNotFoundException::new);
         var appeal = appealRepository.findById(dto.getId()).orElseThrow(EntityNotFoundException::new);
         var current = securityService.getCurrentEmployee();
-        if (!securityService.hasRole(UserRole.ADMIN) && ((!appeal.getDepartment().equals(current.getDepartment())) || (!emp.getDepartment().equals(securityService.getCurrentDepartment())))) {
+        if (!appeal.getDepartment().equals(current.getDepartment()) || (!emp.getDepartment().equals(securityService.getCurrentDepartment()))) {
             throw new RuntimeException("Назначать можно только в рамках собственного департамента");
         }
         appeal.setState(IN_WORK);

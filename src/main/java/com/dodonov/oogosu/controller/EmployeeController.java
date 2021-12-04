@@ -2,7 +2,6 @@ package com.dodonov.oogosu.controller;
 
 import com.dodonov.oogosu.config.security.UserRole;
 import com.dodonov.oogosu.domain.enums.Qualification;
-import com.dodonov.oogosu.dto.DepartmentDto;
 import com.dodonov.oogosu.dto.EmployeeDto;
 import com.dodonov.oogosu.dto.EmployeeSaveDto;
 import com.dodonov.oogosu.dto.appeal.AppealMatchingEmployeeDto;
